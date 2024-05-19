@@ -1,0 +1,35 @@
+"use client";
+
+import { FileInput, Label } from "flowbite-react";
+import React, {useState} from "react";
+import {PDFViewer} from "./PDFViewer.tsx";
+import {PdfTextOnly} from "./PdfTextOnly.tsx";
+
+export function FileUpload() {
+
+    const [file, setFile] = useState(null);
+
+    function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
+        // @ts-ignore
+
+        const newFile = event.target.files[0];
+        // @ts-ignore
+        setFile(newFile);
+    }
+
+
+    return (
+        <div>
+            <div>
+                <Label className="text-blue-400"  htmlFor="file-upload-helper-text" value="Upload file" />
+
+            </div>
+            <FileInput id="file-upload-helper-text" onChange={handleFileChange} helperText="SVG, PNG, JPG or GIF (MAX. 800x400px)." multiple/>
+            {/*<PDFViewer file={file} />*/}
+            <br/>
+            <br/>
+            <h3>PODATKE PDF</h3>
+            <PdfTextOnly file={file}/>
+        </div>
+    );
+}
