@@ -5,6 +5,7 @@ import pandas as pd
 import json
 import numpy as np
 
+
 # def extract_text_from_pdf(file_path):
 #     with pdfplumber.open(file_path) as pdf:
 #         text = ''
@@ -30,8 +31,9 @@ def extract_text_from_pdf(file_path):
     return tables
 
     # Print tables
-    #for i, df in enumerate(dfs):
+    # for i, df in enumerate(dfs):
     #    print(f"Table {i + 1}:\n", df, "\n")
+
 
 #         tables = []
 #             for i, df in enumerate(dfs):
@@ -40,26 +42,20 @@ def extract_text_from_pdf(file_path):
 #             return tables
 
 
-        #print("get")
-    #return df #display(df.head()) df
-
-
-
+# print("get")
+# return df #display(df.head()) df
 
 
 if __name__ == "__main__":
     file_path = sys.argv[1]
-    #print(file_path)
+    # print(file_path)
 
-    #extract_text_from_pdf(file_path) #extracted_text = extract_text_from_pdf(file_path)
-    #print(extracted_text)
+    # extract_text_from_pdf(file_path) #extracted_text = extract_text_from_pdf(file_path)
+    # print(extracted_text)
 
     tables = extract_text_from_pdf(file_path)
-    #print(json.dumps(tables))
+    # print(json.dumps(tables))
 
     print(json.dumps(tables))
 
-
-    #print(json.dumps(tables))
-
-
+    # print(json.dumps(tables))

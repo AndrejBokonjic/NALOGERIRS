@@ -99,7 +99,39 @@ export const FileProcessing = () => {
 
 
         {pdfTexts.map((pdf, pdfIndex) => (
-            {/*NAPISI PDF'S TABELE TUKAJ */}
+            <div  key={pdfIndex}>
+
+                <h3>{pdfIndex+1} PDF Document</h3>
+                {pdf.map((table, tableIndex) => (
+
+                    <div key={tableIndex} className="overflow-x-auto">
+                        <h4>{tableIndex+1} Table</h4>
+                        <Table className="table-auto w-full">
+                            <Table.Head>
+                                {table[0].map((cell, cellIndex) => (
+                                    <Table.HeadCell key={cellIndex} className="bg-blue-300">{cell}</Table.HeadCell>
+                                ))}
+                            </Table.Head>
+
+                            <Table.Body className="divide-y">
+                                {table.slice(1).map((row, rowIndex) => (
+
+                                    <Table.Row key={rowIndex} className="bg-gray-100 dark:border-gray-800 dark:bg-gray-800">
+                                        {row.map((cell, cellIndex) => (
+                                            <Table.Cell key={cellIndex} className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                                                {cell}
+                                            </Table.Cell>
+                                        ))}
+                                    </Table.Row>
+                                ))}
+                            </Table.Body>
+                        </Table>
+                        <br/>
+                    </div>
+
+                ))}
+                <br/>
+            </div>
         ))}
 
     </>
