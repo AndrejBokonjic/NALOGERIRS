@@ -5,9 +5,13 @@ import {Table} from "flowbite-react";
 import "flowbite/dist/flowbite.css";
 //import {PDFViewer} from "./PDFViewer.tsx";
 
-const { ipcRenderer } = window.require('electron');
+//const { ipcRenderer } = window.require('electron');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 //const { ipcRenderer } = require('electron');
+
 //import {ipcRenderer} from 'electron'
+
+//const ipcRenderer  =  window.electron.ipcRenderer;
 
 export const FileProcessing = () => {
 
@@ -22,12 +26,12 @@ export const FileProcessing = () => {
 
         filesUpload.forEach(file => {
             const filePath = file.path;
-            ipcRenderer.send('process-pdf', filePath);
+            window.electron.ipcRenderer.send('process-pdf', filePath);
         });
     }
 
     useEffect(() => {
-        ipcRenderer.on('pdf-processed', (event, data) => {
+        window.electron.ipcRenderer.on('pdf-processed', (event, data) => {
 
             console.log("response:" + data);
             //const parsedData = JSON.parse(data);
@@ -36,7 +40,7 @@ export const FileProcessing = () => {
 
         // Clean up the listener on component unmount
         return () => {
-            ipcRenderer.removeAllListeners('pdf-processed');
+            window.electron.ipcRenderer.removeAllListeners('pdf-processed');
         };
     }, []);
 
