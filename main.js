@@ -1,15 +1,20 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const {format} = require("url");
-const {join} = require("path");
+
 const electronReload = require("electron-reload");
+const { spawn } = require('child_process');
+const {join} = require("path");
 
 function createWindow() {
     const win = new BrowserWindow({
-        width: 800,
-        height: 600,
+        width: 1200,
+        height: 900,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
+            preload: join(__dirname, 'preload.js'),
+
+            //preload:  'preload.js',
         },
     });
 
@@ -23,7 +28,6 @@ function createWindow() {
         protocol: 'file:',
         slashes: true,
     });
-
     win.loadURL(startUrl);*/
 }
 
@@ -39,4 +43,55 @@ app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
         createWindow();
     }
+});
+ipcMain.on('process-pdf', (event, filePath) => {
+    const pythonProcess = spawn('python', [join(__dirname, './python/pdfReadPlumber.py'), filePath]);
+
+    let dataBuffer = '';
+
+    /*
+    pythonProcess.stdout.on('data', (data) => {
+        // vratimo podatke nazaj
+        event.reply('pdf-processed', data.toString());
+    });*/
+    pythonProcess.stdout.on('data', (data) => {
+        dataBuffer += data.toString();
+    });
+
+    pythonProcess.stdout.on('end', () => {
+        try {
+            const tables = JSON.parse(dataBuffer);
+            event.reply('pdf-processed', tables);
+        } catch (error) {
+            console.error('Error parsing JSON data:', error);
+        }
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+        console.error(`stderr: ${data}`);
+    });
+
+    pythonProcess.on('close', (code) => {
+        console.log(`child process exited with code ${code}`);
+    });
+
+    /*
+    let dataBuffer = '';
+
+    pythonProcess.stdout.on('data', (data) => {
+        dataBuffer += data.toString();
+    });
+
+    pythonProcess.stdout.on('end', () => {
+        const tables = JSON.parse(dataBuffer);
+        event.reply('pdf-processed', tables);
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+        console.error(`stderr: ${data}`);
+    });
+
+    pythonProcess.on('close', (code) => {
+        console.log(`child process exited with code ${code}`);
+    });*/
 });

@@ -56,7 +56,7 @@ export const PdfTextOnly = ({ file }:PdfTextOnlyProps) => {
             {textContents.map((text, index) => (
                 <div key={index}>
                     <h3>Text from File {index + 1}</h3>
-                    <pre>{text}</pre>
+                    <p>{text}</p>
                 </div>
             ))}
         </div>
