@@ -1,6 +1,8 @@
 import {FilesUpload} from "./FilesUpload.tsx";
 //import {PdfTextOnly} from "./PdfTextOnly.tsx";
 import {useEffect, useState} from "react";
+import {Table} from "flowbite-react";
+import "flowbite/dist/flowbite.css";
 //import {PDFViewer} from "./PDFViewer.tsx";
 
 const { ipcRenderer } = window.require('electron');
@@ -59,11 +61,12 @@ export const FileProcessing = () => {
             {/*<h3>Uploaded File {index + 1}</h3>*/}
             {/*<PdfTextOnly file={file} />*/}
 
-
+            {/*
             <div>
                 <h3>Extracted Text from File {index + 1}</h3>
                 <pre>{pdfTexts[index]}</pre>
             </div>
+            */}
 
             {/* preview od pdf
             <PDFViewer file={file}/>*/}
@@ -74,7 +77,7 @@ export const FileProcessing = () => {
 
 
 
-
+        {/*
         {pdfTexts.map((pdf, pdfIndex) => (
             <div key={pdfIndex}>
                 <h3>Document {pdfIndex + 1}</h3>
@@ -92,6 +95,13 @@ export const FileProcessing = () => {
                 ))}
             </div>
         ))}
+        */}
+
+
+        {pdfTexts.map((pdf, pdfIndex) => (
+            {/*NAPISI PDF'S TABELE TUKAJ */}
+        ))}
+
     </>
 }
 
