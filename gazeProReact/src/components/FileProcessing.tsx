@@ -3,6 +3,9 @@ import {FilesUpload} from "./FilesUpload.tsx";
 import {useEffect, useState} from "react";
 import {Table} from "flowbite-react";
 import "flowbite/dist/flowbite.css";
+
+import { FaSave, FaTimes } from "react-icons/fa";
+
 //import {PDFViewer} from "./PDFViewer.tsx";
 
 //const { ipcRenderer } = window.require('electron');
@@ -17,6 +20,9 @@ export const FileProcessing = () => {
 
     const [files, setFiles] = useState<File[]>([]);
     const [pdfTexts, setPdfTexts] = useState<Array[]>([]);
+
+    const [editingRow, setEditingRow] = useState<{ tableIndex: number; rowIndex: number } | null>(null);
+
 
     const handleChangeOnFilesUpload = (filesUpload: File[])=> {
         console.log(filesUpload);
@@ -53,6 +59,19 @@ export const FileProcessing = () => {
 
     }
 
+    const handleEditClick = (tableIndex: number, rowIndex: number) => {
+        setEditingRow({ tableIndex, rowIndex });
+    };
+
+    const handleSaveClick = () => {
+        // Add logic to save the changes
+        setEditingRow(null);
+    };
+
+    const handleCancelClick = () => {
+        setEditingRow(null);
+    };
+
 
 
     return <>
@@ -75,7 +94,7 @@ export const FileProcessing = () => {
             {/* preview od pdf
             <PDFViewer file={file}/>*/}
 
-            <br/><br/><br/><br/>
+
         </div>
         ))}
 
@@ -110,22 +129,66 @@ export const FileProcessing = () => {
 
                     <div key={tableIndex} className="overflow-x-auto">
                         <h4>{tableIndex+1} Table</h4>
-                        <Table className="table-auto w-full">
-                            <Table.Head>
+
+                        <Table className="table-auto w-full border rounded-lg overflow-hidden">
+                            <Table.Head >
+
                                 {table[0].map((cell, cellIndex) => (
                                     <Table.HeadCell key={cellIndex} className="bg-blue-300">{cell}</Table.HeadCell>
                                 ))}
+                                <Table.HeadCell className="bg-blue-300">
+                                    {/* <span className="sr-only">Edit</span>*/}
+                                    {editingRow && editingRow.tableIndex === tableIndex && editingRow.rowIndex === 0 ? (
+                                        <>
+                                            <button onClick={handleSaveClick} className="mr-2">
+                                                <FaSave className="text-blue-100" />
+                                            </button>
+                                            <button onClick={handleCancelClick}>
+                                                <FaTimes className="text-red-600" />
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <button onClick={() => handleEditClick(tableIndex, 0)} className="font-medium text-white hover:underline dark:text-cyan-500 w-16 h-10">
+                                            Edit
+                                        </button>
+                                    )}
+                                </Table.HeadCell>
                             </Table.Head>
 
                             <Table.Body className="divide-y">
+                                {/*Imamo rowIndex +1 ker delamo slice(1) in tako zgubimo prvo row od tabele, ki je dejansko gor prikazan*/}
                                 {table.slice(1).map((row, rowIndex) => (
 
-                                    <Table.Row key={rowIndex} className="bg-gray-100 dark:border-gray-800 dark:bg-gray-800">
+
+                                    <Table.Row key={rowIndex+1} className="bg-gray-100 dark:border-gray-800 dark:bg-gray-800">
                                         {row.map((cell, cellIndex) => (
                                             <Table.Cell key={cellIndex} className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
                                                 {cell}
                                             </Table.Cell>
                                         ))}
+                                        {/*
+                                        <Table.Cell>
+                                            <a href="#" className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
+                                                Edit
+                                            </a>
+                                        </Table.Cell>*/}
+
+                                        <Table.Cell>
+                                            {editingRow && editingRow.tableIndex === tableIndex && editingRow.rowIndex === rowIndex +1 ? (
+                                                <>
+                                                    <button onClick={handleSaveClick} className="mr-2 ">
+                                                        <FaSave className="text-blue-100" />
+                                                    </button>
+                                                    <button onClick={handleCancelClick}>
+                                                        <FaTimes className="text-red-600" />
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <button onClick={() => handleEditClick(tableIndex, rowIndex+1)} className="font-medium text-white hover:underline dark:text-cyan-500 w-16 h-10">
+                                                    Edit
+                                                </button>
+                                            )}
+                                        </Table.Cell>
                                     </Table.Row>
                                 ))}
                             </Table.Body>

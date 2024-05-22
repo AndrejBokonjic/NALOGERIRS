@@ -22,7 +22,7 @@ export const FilesUpload = ({onAddFiles}:FilesUploadProps) => {
                 <Label className="text-blue-400" htmlFor="file-upload-helper-text" value="Upload pdf" />
             </div>
             <FileInput id="file-upload-helper-text" onChange={handleFileChange} helperText="Accepted pdf" multiple />
-
+        <br/>
         </div>
     );
 }
