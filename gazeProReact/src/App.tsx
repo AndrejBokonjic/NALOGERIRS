@@ -5,7 +5,7 @@ import './App.css'
 import {Pozdrav} from "./components/Pozdrav.tsx";
 
 import {FileProcessing} from "./components/FileProcessing.tsx";
-import { TestTable} from "./components/tableTest.tsx";
+import {TableTemplate} from "./components/TableTemplate.tsx";
 
 function App() {
   //const [count, setCount] = useState(0)
@@ -17,7 +17,7 @@ function App() {
 
         <FileProcessing/>
 
-        {/*<TestTable/>*/}
+        <TableTemplate />
 
         {/*<FileUpload/>*}/
 
