@@ -5,25 +5,23 @@ import {Table} from "flowbite-react";
 import "flowbite/dist/flowbite.css";
 
 import { FaSave, FaTimes } from "react-icons/fa";
-import { CiEdit } from "react-icons/ci";
+//import { CiEdit } from "react-icons/ci";
 import { MdDelete } from "react-icons/md";
 
-//import {PDFViewer} from "./PDFViewer.tsx";
 
-//const { ipcRenderer } = window.require('electron');
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-//const { ipcRenderer } = require('electron');
-
-//import {ipcRenderer} from 'electron'
-
-//const ipcRenderer  =  window.electron.ipcRenderer;
 
 export const FileProcessing = () => {
 
     const [files, setFiles] = useState<File[]>([]);
     const [pdfTexts, setPdfTexts] = useState<Array[]>([]);
 
-    const [editingRow, setEditingRow] = useState<{ tableIndex: number; rowIndex: number } | null>(null);
+    const [editingCell, setEditingCell] = useState<{pdfIndex:number, tableIndex: number; rowIndex: number; cellIndex: number } | null>(null);
+    const [cellValue, setCellValue] = useState<string>("");
+    //const [cellIndexClicked, setCellIndexClicked] = useState<number>();
+
+    //const [initialCellValue, setInitialCellValue] = useState<string>("")
+    const [initialCellValues, setInitialCellValues] = useState<{ [key: string]: string }>({});
+
 
 
     const handleChangeOnFilesUpload = (filesUpload: File[])=> {
@@ -52,28 +50,67 @@ export const FileProcessing = () => {
         };
     }, []);
 
+    /*
     if (pdfTexts.length>0){
         console.log("TEST TEST");
         console.log(pdfTexts);
         console.log(files);
         console.log("array pdf tables: " + pdfTexts[0]);
         console.log(typeof pdfTexts[0]);
+    }*/
 
-    }
-
+    /*
     const handleEditClick = (tableIndex: number, rowIndex: number) => {
         setEditingRow({ tableIndex, rowIndex });
     };
-
     const handleSaveClick = () => {
         // Add logic to save the changes
-        setEditingRow(null);
-    };
+        setEditingCell(null);
+    };*/
+    const handleCancelClick = (pdfIndex:number, tableIndex:number, rowIndex:number) => {
+        setEditingCell(null);
 
-    const handleCancelClick = () => {
-        setEditingRow(null);
-    };
+        setPdfTexts(prevPdfTexts => {
+            const updatedPdfTexts = [...prevPdfTexts];
+            const key = `${pdfIndex}-${tableIndex}-${rowIndex}-${editingCell!.cellIndex}`;
+            updatedPdfTexts[pdfIndex][tableIndex][rowIndex][editingCell!.cellIndex] = initialCellValues[key];
+            return updatedPdfTexts;
+        });
+        console.log("initial cell values: "+   initialCellValues[`${pdfIndex}-${tableIndex}-${rowIndex}-${editingCell!.cellIndex}`]);
+        setInitialCellValues({});
 
+    };
+    const handleCellClick = (pdfIndex: number, tableIndex: number, rowIndex: number, cellIndex: number, value: string) => {
+        const key = `${pdfIndex}-${tableIndex}-${rowIndex}-${cellIndex}`;
+        if (!(key in initialCellValues)) {
+            setInitialCellValues(prevValues => ({
+                ...prevValues,
+                [key]: value
+            }));
+        }
+
+        setEditingCell({pdfIndex, tableIndex, rowIndex, cellIndex });
+        setCellValue(value);
+
+        /*
+        if (editingCell == null) {
+            setInitialCellValue(value);
+        }*/
+
+        console.log("handleCellClick: "+ initialCellValues[key]);
+    };
+    const handleCellChange = (event: React.ChangeEvent<HTMLInputElement>, pdfIndex:number, tableIndex:number, rowIndex:number,cellIndex:number) => {
+        const updatedValue = event.target.value;
+        setCellValue(updatedValue);
+        console.log("handleCellChange: "+ event.target.value);
+
+        setPdfTexts(prevPdfTexts => {
+            const updatedPdfTexts = [...prevPdfTexts];
+            updatedPdfTexts[pdfIndex][tableIndex][rowIndex][cellIndex] = updatedValue;
+            return updatedPdfTexts;
+        });
+
+    };
 
     const handleDeleteClick = (tableIndex: number, rowIndex: number) => {
 
@@ -84,11 +121,8 @@ export const FileProcessing = () => {
 
         {pdfTexts.map((file, index) => (
         <div key={index}>
-
-
             {/*<h3>Uploaded File {index + 1}</h3>*/}
             {/*<PdfTextOnly file={file} />*/}
-
             {/*
             <div>
                 <h3>Extracted Text from File {index + 1}</h3>
@@ -98,114 +132,59 @@ export const FileProcessing = () => {
 
             {/* preview od pdf
             <PDFViewer file={file}/>*/}
-
-
         </div>
         ))}
 
 
 
-        {/*
         {pdfTexts.map((pdf, pdfIndex) => (
             <div key={pdfIndex}>
-                <h3>Document {pdfIndex + 1}</h3>
+                <h3>{pdfIndex + 1} PDF Document</h3>
                 {pdf.map((table, tableIndex) => (
-                    <div key={tableIndex}>
-                        <h4>Table {tableIndex + 1}</h4>
-                        {table.map((row, rowIndex) => (
-                            <div key={rowIndex}>
-                                {row.map((cell, cellIndex) => (
-                                    <pre key={cellIndex}>{cell}</pre>
-                                ))}
-                            </div>
-                        ))}
-                    </div>
-                ))}
-            </div>
-        ))}
-        */}
-
-
-        {pdfTexts.map((pdf, pdfIndex) => (
-            <div  key={pdfIndex}>
-
-                <h3>{pdfIndex+1} PDF Document</h3>
-                {pdf.map((table, tableIndex) => (
-
                     <div key={tableIndex} className="overflow-x-auto">
-                        <h4>{tableIndex+1} Table</h4>
-
+                        <h4>{tableIndex + 1} Table</h4>
                         <Table className="table-auto w-full border rounded-lg overflow-hidden">
-                            <Table.Head >
 
+
+                            <Table.Head>
                                 {table[0].map((cell, cellIndex) => (
                                     <Table.HeadCell key={cellIndex} className="bg-blue-300">{cell}</Table.HeadCell>
                                 ))}
-                                <Table.HeadCell className="bg-blue-300">
-                                    {/* <span className="sr-only">Edit</span>*/}
-                                    {editingRow && editingRow.tableIndex === tableIndex && editingRow.rowIndex === 0 ? (
-                                        <>
-                                            <button onClick={handleSaveClick} className="mr-2 text-base">
-                                                <FaSave className="text-blue-100" />
-                                            </button>
-                                            <button onClick={handleCancelClick} className="text-base">
-                                                <FaTimes className="text-red-600" />
-                                            </button>
-
-
-                                        </>
-                                    ) : (
-                                        <div className="flex space-x-2" >
-                                            <button onClick={() => handleEditClick(tableIndex, 0)} className="font-medium text-sm text-white hover:underline dark:text-cyan-500 ">
-                                                Edit
-                                            </button>
-                                            <button onClick={() => handleDeleteClick(tableIndex,  0)} className="bg-red-700 text-sm" >
-                                                <MdDelete className="text-white" />
-                                            </button>
-                                        </div>
-                                    )}
-                                </Table.HeadCell>
+                                <Table.HeadCell className="bg-blue-300">Actions</Table.HeadCell>
                             </Table.Head>
 
+
                             <Table.Body className="divide-y">
-                                {/*Imamo rowIndex +1 ker delamo slice(1) in tako zgubimo prvo row od tabele, ki je dejansko gor prikazan*/}
                                 {table.slice(1).map((row, rowIndex) => (
-
-
-                                    <Table.Row key={rowIndex+1} className="bg-gray-100 dark:border-gray-800 dark:bg-gray-800">
+                                    <Table.Row key={rowIndex + 1} className="bg-gray-100 dark:border-gray-800 dark:bg-gray-800">
                                         {row.map((cell, cellIndex) => (
-                                            <Table.Cell key={cellIndex} className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                                {cell}
+                                            <Table.Cell
+                                                key={cellIndex}
+                                                className="whitespace-nowrap font-medium text-gray-900 dark:text-white"
+                                                onClick={() => handleCellClick(pdfIndex,tableIndex, rowIndex + 1, cellIndex, cell)}
+                                            >
+                                                {editingCell && editingCell.pdfIndex===pdfIndex && editingCell.tableIndex === tableIndex && editingCell.rowIndex === rowIndex + 1 && editingCell.cellIndex === cellIndex ? (
+                                                    <input
+                                                        type="text"
+                                                        value={cellValue}
+                                                        onChange={(e) => handleCellChange(e, pdfIndex, tableIndex, rowIndex+1, cellIndex)}
+                                                        className="w-full bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
+                                                    />
+                                                ) : (
+                                                    cell
+                                                )}
                                             </Table.Cell>
                                         ))}
-                                        {/*
                                         <Table.Cell>
-                                            <a href="#" className="font-medium text-cyan-600 hover:underline dark:text-cyan-500">
-                                                Edit
-                                            </a>
-                                        </Table.Cell>*/}
-
-                                        <Table.Cell>
-                                            {editingRow && editingRow.tableIndex === tableIndex && editingRow.rowIndex === rowIndex +1 ? (
+                                            {editingCell && editingCell.pdfIndex === pdfIndex && editingCell.tableIndex === tableIndex && editingCell.rowIndex === rowIndex + 1  ? (
                                                 <>
-                                                    <button onClick={handleSaveClick} className="mr-2 text-base">
-                                                        <FaSave className="text-blue-100" />
-                                                    </button>
-                                                    <button onClick={handleCancelClick} className="font-medium text-base">
+                                                    <button onClick={() => handleCancelClick(pdfIndex, tableIndex, rowIndex)} className="text-base">
                                                         <FaTimes className="text-red-600" />
                                                     </button>
                                                 </>
                                             ) : (
                                                 <div className="flex space-x-2">
-                                                    <button onClick={() => handleEditClick(tableIndex, rowIndex + 1)} className="font-medium text-sm text-white hover:underline dark:text-cyan-500 ">
-                                                        Edit
-                                                    </button>
-                                                    {/*
-                                                    <button onClick={() => handleDeleteClick(tableIndex, rowIndex + 1)} className="font-medium text-sm bg-red-700 text-white hover:underline dark:text-cyan-500 ">
-                                                        Delete
-                                                    </button>
-                                                    */}
-                                                    <button onClick={() => handleDeleteClick(tableIndex, rowIndex + 1)} className="bg-red-700 text-sm" >
+                                                    <button onClick={() => handleDeleteClick(tableIndex, rowIndex + 1)} className="bg-red-700 text-sm">
                                                         <MdDelete className="text-white" />
                                                     </button>
                                                 </div>
@@ -214,12 +193,13 @@ export const FileProcessing = () => {
                                     </Table.Row>
                                 ))}
                             </Table.Body>
-                        </Table>
-                        <br/>
-                    </div>
 
+
+                        </Table>
+                        <br />
+                    </div>
                 ))}
-                <br/>
+                <br />
             </div>
         ))}
 
