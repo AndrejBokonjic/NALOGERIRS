@@ -17,8 +17,20 @@ def extract_text_from_pdf(file_path):
                 table_data = [columns]
                 table_data.extend(df.values.tolist())
 
+                #all_cells=0
+                empty_or_none_cell=0
+                value_in_cell =0
+                for row in table_data:
+                    #all_cells += len(row)
+                    for cell in row:
+                        if cell == "" or cell is None:
+                            empty_or_none_cell += 1
+                        else:
+                            value_in_cell +=1
 
-                tables.append(table_data)
+                # preverimo ali so 50% cells empty or None
+                if value_in_cell > empty_or_none_cell :
+                    tables.append(table_data)
 
     return tables
 
