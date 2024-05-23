@@ -8,7 +8,7 @@ def extract_text_from_pdf(file_path):
     tables = []
     with pdfplumber.open(file_path) as pdf:
         for page in pdf.pages:
-            # Extracting tables from each page
+
             page_tables = page.extract_tables()
             for table in page_tables:
                 df = pd.DataFrame(table[1:], columns=table[0])
@@ -16,7 +16,10 @@ def extract_text_from_pdf(file_path):
                 columns = df.columns.tolist()
                 table_data = [columns]
                 table_data.extend(df.values.tolist())
+
+
                 tables.append(table_data)
+
     return tables
 
 if __name__ == "__main__":

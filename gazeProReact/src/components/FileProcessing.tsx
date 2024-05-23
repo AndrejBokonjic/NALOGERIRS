@@ -73,13 +73,16 @@ export const FileProcessing = () => {
     };
 
 
+    const handleDeleteClick = (tableIndex: number, param2: any) => {
+
+    }
 
     return <>
         <FilesUpload onAddFiles={handleChangeOnFilesUpload}/>
 
         {pdfTexts.map((file, index) => (
         <div key={index}>
-            <br />
+
 
             {/*<h3>Uploaded File {index + 1}</h3>*/}
             {/*<PdfTextOnly file={file} />*/}
@@ -148,7 +151,7 @@ export const FileProcessing = () => {
                                             </button>
                                         </>
                                     ) : (
-                                        <button onClick={() => handleEditClick(tableIndex, 0)} className="font-medium text-white hover:underline dark:text-cyan-500 w-16 h-10">
+                                        <button onClick={() => handleEditClick(tableIndex, 0)} className="font-medium text-sm text-white hover:underline dark:text-cyan-500 ">
                                             Edit
                                         </button>
                                     )}
@@ -184,9 +187,14 @@ export const FileProcessing = () => {
                                                     </button>
                                                 </>
                                             ) : (
-                                                <button onClick={() => handleEditClick(tableIndex, rowIndex+1)} className="font-medium text-white hover:underline dark:text-cyan-500 w-16 h-10">
-                                                    Edit
-                                                </button>
+                                                <div className="flex space-x-2">
+                                                    <button onClick={() => handleEditClick(tableIndex, rowIndex + 1)} className="font-medium text-white hover:underline dark:text-cyan-500 w-16 h-10">
+                                                        Edit
+                                                    </button>
+                                                    <button onClick={() => handleDeleteClick(tableIndex, rowIndex + 1)} className="font-medium bg-red-700 text-white hover:underline dark:text-cyan-500">
+                                                        Delete
+                                                    </button>
+                                                </div>
                                             )}
                                         </Table.Cell>
                                     </Table.Row>
