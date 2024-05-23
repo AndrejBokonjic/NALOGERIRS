@@ -5,6 +5,8 @@ import {Table} from "flowbite-react";
 import "flowbite/dist/flowbite.css";
 
 import { FaSave, FaTimes } from "react-icons/fa";
+import { CiEdit } from "react-icons/ci";
+import { MdDelete } from "react-icons/md";
 
 //import {PDFViewer} from "./PDFViewer.tsx";
 
@@ -73,7 +75,7 @@ export const FileProcessing = () => {
     };
 
 
-    const handleDeleteClick = (tableIndex: number, param2: any) => {
+    const handleDeleteClick = (tableIndex: number, rowIndex: number) => {
 
     }
 
@@ -143,17 +145,24 @@ export const FileProcessing = () => {
                                     {/* <span className="sr-only">Edit</span>*/}
                                     {editingRow && editingRow.tableIndex === tableIndex && editingRow.rowIndex === 0 ? (
                                         <>
-                                            <button onClick={handleSaveClick} className="mr-2">
+                                            <button onClick={handleSaveClick} className="mr-2 text-base">
                                                 <FaSave className="text-blue-100" />
                                             </button>
-                                            <button onClick={handleCancelClick}>
+                                            <button onClick={handleCancelClick} className="text-base">
                                                 <FaTimes className="text-red-600" />
                                             </button>
+
+
                                         </>
                                     ) : (
-                                        <button onClick={() => handleEditClick(tableIndex, 0)} className="font-medium text-sm text-white hover:underline dark:text-cyan-500 ">
-                                            Edit
-                                        </button>
+                                        <div className="flex space-x-2" >
+                                            <button onClick={() => handleEditClick(tableIndex, 0)} className="font-medium text-sm text-white hover:underline dark:text-cyan-500 ">
+                                                Edit
+                                            </button>
+                                            <button onClick={() => handleDeleteClick(tableIndex,  0)} className="bg-red-700 text-sm" >
+                                                <MdDelete className="text-white" />
+                                            </button>
+                                        </div>
                                     )}
                                 </Table.HeadCell>
                             </Table.Head>
@@ -179,20 +188,25 @@ export const FileProcessing = () => {
                                         <Table.Cell>
                                             {editingRow && editingRow.tableIndex === tableIndex && editingRow.rowIndex === rowIndex +1 ? (
                                                 <>
-                                                    <button onClick={handleSaveClick} className="mr-2 ">
+                                                    <button onClick={handleSaveClick} className="mr-2 text-base">
                                                         <FaSave className="text-blue-100" />
                                                     </button>
-                                                    <button onClick={handleCancelClick}>
+                                                    <button onClick={handleCancelClick} className="font-medium text-base">
                                                         <FaTimes className="text-red-600" />
                                                     </button>
                                                 </>
                                             ) : (
                                                 <div className="flex space-x-2">
-                                                    <button onClick={() => handleEditClick(tableIndex, rowIndex + 1)} className="font-medium text-white hover:underline dark:text-cyan-500 w-16 h-10">
+                                                    <button onClick={() => handleEditClick(tableIndex, rowIndex + 1)} className="font-medium text-sm text-white hover:underline dark:text-cyan-500 ">
                                                         Edit
                                                     </button>
-                                                    <button onClick={() => handleDeleteClick(tableIndex, rowIndex + 1)} className="font-medium bg-red-700 text-white hover:underline dark:text-cyan-500">
+                                                    {/*
+                                                    <button onClick={() => handleDeleteClick(tableIndex, rowIndex + 1)} className="font-medium text-sm bg-red-700 text-white hover:underline dark:text-cyan-500 ">
                                                         Delete
+                                                    </button>
+                                                    */}
+                                                    <button onClick={() => handleDeleteClick(tableIndex, rowIndex + 1)} className="bg-red-700 text-sm" >
+                                                        <MdDelete className="text-white" />
                                                     </button>
                                                 </div>
                                             )}
