@@ -11,7 +11,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 export const PDFViewer = ({ file }) => {
     const [numPages, setNumPages] = useState(null);
 
-    // @ts-ignore
+
     function onDocumentLoadSuccess({ numPages }) {
         setNumPages(numPages);
     }

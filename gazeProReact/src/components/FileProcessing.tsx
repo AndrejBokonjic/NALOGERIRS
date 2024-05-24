@@ -1,6 +1,6 @@
 import {FilesUpload} from "./FilesUpload.tsx";
 //import {PdfTextOnly} from "./PdfTextOnly.tsx";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Table} from "flowbite-react";
 import "flowbite/dist/flowbite.css";
 
@@ -80,8 +80,8 @@ export const FileProcessing = () => {
         console.log("editingCell!.cellIndex: "+ editingCell!.cellIndex);
         console.log("initial cell values: "+   initialCellValues[`${pdfIndex}-${tableIndex}-${rowIndex}-${editingCell!.cellIndex}`]);
         setInitialCellValues({});
-
     };
+
     const handleCellClick = (pdfIndex: number, tableIndex: number, rowIndex: number, cellIndex: number, value: string) => {
         const key = `${pdfIndex}-${tableIndex}-${rowIndex}-${cellIndex}`;
         if (!(key in initialCellValues)) {
@@ -90,7 +90,6 @@ export const FileProcessing = () => {
             });
             console.log("Updated initial cell values:", initialCellValues);
         }
-
         setEditingCell({pdfIndex, tableIndex, rowIndex, cellIndex });
         setCellValue(value);
 
@@ -98,8 +97,6 @@ export const FileProcessing = () => {
         if (editingCell == null) {
             setInitialCellValue(value);
         }*/
-
-
     };
 
     console.log(JSON.stringify(initialCellValues, null, 2));
@@ -114,7 +111,6 @@ export const FileProcessing = () => {
             updatedPdfTexts[pdfIndex][tableIndex][rowIndex][cellIndex] = updatedValue;
             return updatedPdfTexts;
         });
-
     };
 
     const [deletedRows, setDeletedRows] = useState<Set<string>>(new Set());
@@ -183,7 +179,7 @@ export const FileProcessing = () => {
                             <Table.Body className="divide-y">
                                 {table.slice(1).map((row, rowIndex) => (
                                     <Table.Row key={rowIndex + 1} className="bg-gray-100 dark:border-gray-800 dark:bg-gray-800">
-                                        {row.map((cell, cellIndex) => (
+                                        {row.map((cell:string, cellIndex:number) => (
                                             <Table.Cell
                                                 key={cellIndex}
                                                 className="whitespace-nowrap font-medium text-gray-900 dark:text-white"
