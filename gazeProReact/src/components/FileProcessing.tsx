@@ -121,10 +121,9 @@ export const FileProcessing = () => {
             return;
         }
 
-        setDeletedRows(prevDeletedRows => new Set(prevDeletedRows.add(rowKey)));
+        setDeletedRows(new Set());
 
         setPdfTexts(prevPdfTexts => {
-
             const updatedPdfTexts = prevPdfTexts.map((pdf, pIndex) =>
                 pIndex === pdfIndex ? pdf.map((table, tIndex) =>
                     tIndex === tableIndex ? table.filter((_, rIndex) => rIndex !== rowIndex) : table
