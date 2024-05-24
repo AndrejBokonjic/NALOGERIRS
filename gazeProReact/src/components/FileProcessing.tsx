@@ -77,6 +77,7 @@ export const FileProcessing = () => {
             updatedPdfTexts[pdfIndex][tableIndex][rowIndex][editingCell!.cellIndex] = initialCellValues[key];
             return updatedPdfTexts;
         });
+        console.log("editingCell!.cellIndex: "+ editingCell!.cellIndex);
         console.log("initial cell values: "+   initialCellValues[`${pdfIndex}-${tableIndex}-${rowIndex}-${editingCell!.cellIndex}`]);
         setInitialCellValues({});
 
@@ -84,10 +85,10 @@ export const FileProcessing = () => {
     const handleCellClick = (pdfIndex: number, tableIndex: number, rowIndex: number, cellIndex: number, value: string) => {
         const key = `${pdfIndex}-${tableIndex}-${rowIndex}-${cellIndex}`;
         if (!(key in initialCellValues)) {
-            setInitialCellValues(prevValues => ({
-                ...prevValues,
+            setInitialCellValues({
                 [key]: value
-            }));
+            });
+            console.log("Updated initial cell values:", initialCellValues);
         }
 
         setEditingCell({pdfIndex, tableIndex, rowIndex, cellIndex });
@@ -98,8 +99,11 @@ export const FileProcessing = () => {
             setInitialCellValue(value);
         }*/
 
-        console.log("handleCellClick: "+ initialCellValues[key]);
+
     };
+
+    console.log(JSON.stringify(initialCellValues, null, 2));
+
     const handleCellChange = (event: React.ChangeEvent<HTMLInputElement>, pdfIndex:number, tableIndex:number, rowIndex:number,cellIndex:number) => {
         const updatedValue = event.target.value;
         setCellValue(updatedValue);
@@ -200,7 +204,7 @@ export const FileProcessing = () => {
                                         <Table.Cell>
                                             {editingCell && editingCell.pdfIndex === pdfIndex && editingCell.tableIndex === tableIndex && editingCell.rowIndex === rowIndex + 1  ? (
                                                 <>
-                                                    <button onClick={() => handleCancelClick(pdfIndex, tableIndex, rowIndex)} className="text-base">
+                                                    <button onClick={() => handleCancelClick(pdfIndex, tableIndex, rowIndex +1)} className="text-base">
                                                         <FaTimes className="text-red-600" />
                                                     </button>
                                                 </>
