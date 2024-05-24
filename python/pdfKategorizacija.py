@@ -7,7 +7,7 @@ def categorize_pdf(file_path):
 
 
             if "The Butterfly Test" in text or "Butterfly-method" in text:
-                return "Butter fly test"
+                return "Butterfly test"
             elif "Head-Neck Relocation Test" in text or "Joint position error" in text:   # IF USLOVI
                 return "Head neck relocation test"
             elif "Range of motion" in text or "Range Of Motion" in text:

@@ -2,10 +2,13 @@
 //import reactLogo from './assets/react.svg'
 //import viteLogo from '/vite.svg'
 import './App.css'
-import {Pozdrav} from "./components/Pozdrav.tsx";
+import {Pozdrav} from "./components/InUseComponents/Pozdrav.tsx";
 
-import {FileProcessing} from "./components/FileProcessing.tsx";
-import {TableTemplate} from "./components/TableTemplate.tsx";
+import {FileProcessing} from "./components/InUseComponents/FileProcessing.tsx";
+import {TableTemplate} from "./components/TestOrNotInUseComponents/TableTemplate.tsx";
+import {AddingRow} from "./components/addingNewRowTEST.tsx";
+import {TestAddTableFileProcessing} from "./components/TestOrNotInUseComponents/TestAddTableFileProcessing.tsx";
+import {PopUpFileProcessing} from "./components/TestOrNotInUseComponents/PopUpFileProcessing.tsx";
 
 function App() {
   //const [count, setCount] = useState(0)
@@ -16,6 +19,9 @@ function App() {
         <Pozdrav/>
 
         <FileProcessing/>
+
+    {/*<TestAddTableFileProcessing/>*/}
+
 
         {/*<TableTemplate />*/}
 
