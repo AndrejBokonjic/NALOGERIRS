@@ -17,7 +17,7 @@ function App() {
 
         <FileProcessing/>
 
-        <TableTemplate />
+        {/*<TableTemplate />*/}
 
         {/*<FileUpload/>*}/
 

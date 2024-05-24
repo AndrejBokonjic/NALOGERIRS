@@ -135,7 +135,7 @@ export const FileProcessing = () => {
     };
 
 
-
+    console.log(pdfTexts);
 
     return <>
         <FilesUpload onAddFiles={handleChangeOnFilesUpload}/>
