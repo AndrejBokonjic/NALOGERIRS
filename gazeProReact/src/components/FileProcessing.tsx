@@ -10,6 +10,7 @@ import { MdDelete } from "react-icons/md";
 
 
 
+
 export const FileProcessing = () => {
 
     const [files, setFiles] = useState<File[]>([]);
@@ -112,9 +113,30 @@ export const FileProcessing = () => {
 
     };
 
-    const handleDeleteClick = (tableIndex: number, rowIndex: number) => {
+    const [deletedRows, setDeletedRows] = useState<Set<string>>(new Set());
 
-    }
+    const handleDeleteClick = (pdfIndex: number, tableIndex: number, rowIndex: number) => {
+        const rowKey = `${pdfIndex}-${tableIndex}-${rowIndex}`;
+        if (deletedRows.has(rowKey)) {
+            return;
+        }
+
+        setDeletedRows(prevDeletedRows => new Set(prevDeletedRows.add(rowKey)));
+
+        setPdfTexts(prevPdfTexts => {
+
+            const updatedPdfTexts = prevPdfTexts.map((pdf, pIndex) =>
+                pIndex === pdfIndex ? pdf.map((table, tIndex) =>
+                    tIndex === tableIndex ? table.filter((_, rIndex) => rIndex !== rowIndex) : table
+                ) : pdf
+            );
+
+            return updatedPdfTexts;
+        });
+    };
+
+
+
 
     return <>
         <FilesUpload onAddFiles={handleChangeOnFilesUpload}/>
@@ -184,7 +206,7 @@ export const FileProcessing = () => {
                                                 </>
                                             ) : (
                                                 <div className="flex space-x-2">
-                                                    <button onClick={() => handleDeleteClick(tableIndex, rowIndex + 1)} className="bg-red-700 text-sm">
+                                                    <button onClick={() => handleDeleteClick(pdfIndex, tableIndex, rowIndex + 1)} className="bg-red-700 text-sm">
                                                         <MdDelete className="text-white" />
                                                     </button>
                                                 </div>
