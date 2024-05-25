@@ -16,6 +16,7 @@ export const FileProcessing = () => {
 
     const [files, setFiles] = useState<File[]>([]);
     const [pdfTexts, setPdfTexts] = useState<Array[]>([]);
+    const [pdfCategories, setPdfCategories] = useState<string[]>([]);
 
     const [editingCell, setEditingCell] = useState<{pdfIndex:number, tableIndex: number; rowIndex: number; cellIndex: number } | null>(null);
     const [cellValue, setCellValue] = useState<string>("");
@@ -38,20 +39,27 @@ export const FileProcessing = () => {
         filesUpload.forEach(file => {
             const filePath = file.path;
             window.electron.ipcRenderer.send('process-pdf', filePath);
+            window.electron.ipcRenderer.send('categorize-pdf', filePath);
         });
     }
 
     useEffect(() => {
         window.electron.ipcRenderer.on('pdf-processed', (event, data) => {
-
             console.log("response:" + data);
             //const parsedData = JSON.parse(data);
             setPdfTexts(prevTexts => [...prevTexts, data]);
         });
 
+        window.electron.ipcRenderer.on('pdf-categorized', (event, data) => {
+            setPdfCategories(prevCategories => [...prevCategories, data]);
+
+            console.log("response new categories: "+ data);
+        })
+
         // Clean up the listener on component unmount
         return () => {
             window.electron.ipcRenderer.removeAllListeners('pdf-processed');
+            window.electron.ipcRenderer.removeAllListeners('pdf-categorized');
         };
     }, []);
 
@@ -190,7 +198,7 @@ export const FileProcessing = () => {
 
         {pdfTexts.map((pdf, pdfIndex) => (
             <div key={pdfIndex}>
-                <h3>{pdfIndex + 1} PDF Document</h3>
+                <h3>{pdfIndex + 1} PDF name: {pdfCategories[pdfIndex]}</h3>
                 {pdf.map((table, tableIndex) => (
                     <div key={tableIndex} className="overflow-x-auto">
                         <h4>{tableIndex + 1} Table</h4>

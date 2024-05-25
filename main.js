@@ -46,10 +46,9 @@ app.on('activate', () => {
     }
 });
 ipcMain.on('process-pdf', (event, filePath) => {
+
     const pythonProcess = spawn('python', [join(__dirname, './python/pdfReadPlumber.py'), filePath]);
-
     let dataBuffer = '';
-
     /*
     pythonProcess.stdout.on('data', (data) => {
         // vratimo podatke nazaj
@@ -67,32 +66,27 @@ ipcMain.on('process-pdf', (event, filePath) => {
             console.error('Error parsing JSON data:', error);
         }
     });
-
     pythonProcess.stderr.on('data', (data) => {
         console.error(`stderr: ${data}`);
     });
-
     pythonProcess.on('close', (code) => {
         console.log(`child process exited with code ${code}`);
     });
 
-    /*
-    let dataBuffer = '';
+});
+
+ipcMain.on('categorize-pdf', (event, filePath) => {
+    const pythonProcess = spawn('python', [join(__dirname, './python/pdfKategorizacija.py'), filePath]);
 
     pythonProcess.stdout.on('data', (data) => {
-        dataBuffer += data.toString();
+        event.reply('pdf-categorized', data.toString());
     });
-
-    pythonProcess.stdout.on('end', () => {
-        const tables = JSON.parse(dataBuffer);
-        event.reply('pdf-processed', tables);
+    pythonProcess.stderr.on('data', (data)=> {
+        console.error(`stderror: ${data}`);
     });
-
-    pythonProcess.stderr.on('data', (data) => {
-        console.error(`stderr: ${data}`);
-    });
-
     pythonProcess.on('close', (code) => {
         console.log(`child process exited with code ${code}`);
-    });*/
+    });
+
+
 });
