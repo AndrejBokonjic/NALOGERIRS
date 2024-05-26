@@ -79,7 +79,7 @@ ipcMain.on('categorize-pdf', (event, filePath) => {
     const pythonProcess = spawn('python', [join(__dirname, './python/pdfKategorizacija.py'), filePath]);
 
     pythonProcess.stdout.on('data', (data) => {
-        event.reply('pdf-categorized', data.toString());
+        event.reply('pdf-categorized', data.toString().trim());
     });
     pythonProcess.stderr.on('data', (data)=> {
         console.error(`stderror: ${data}`);

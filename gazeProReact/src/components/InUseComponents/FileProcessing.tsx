@@ -8,8 +8,7 @@ import { FaSave, FaTimes } from "react-icons/fa";
 //import { CiEdit } from "react-icons/ci";
 import { MdDelete } from "react-icons/md";
 import DeleteConfirmationModal from "./PopUpDeleteRowConformation.tsx";
-
-
+import {InsertTableButterfly} from "./InsertTable.tsx";
 
 
 export const FileProcessing = () => {
@@ -72,14 +71,7 @@ export const FileProcessing = () => {
         console.log(typeof pdfTexts[0]);
     }*/
 
-    /*
-    const handleEditClick = (tableIndex: number, rowIndex: number) => {
-        setEditingRow({ tableIndex, rowIndex });
-    };
-    const handleSaveClick = () => {
-        // Add logic to save the changes
-        setEditingCell(null);
-    };*/
+
     const handleCancelClick = (pdfIndex:number, tableIndex:number, rowIndex:number) => {
         setEditingCell(null);
 
@@ -125,27 +117,6 @@ export const FileProcessing = () => {
         });
     };
 
-    //const [deletedRows, setDeletedRows] = useState<Set<string>>(new Set());
-
-    /*
-    const handleDeleteClick = (pdfIndex: number, tableIndex: number, rowIndex: number) => {
-        // const rowKey = `${pdfIndex}-${tableIndex}-${rowIndex}`;
-        // if (deletedRows.has(rowKey)) {
-        //     return;
-        // }
-        //
-        // setDeletedRows(new Set());
-
-        setPdfTexts(prevPdfTexts => {
-            const updatedPdfTexts = prevPdfTexts.map((pdf, pIndex) =>
-                pIndex === pdfIndex ? pdf.map((table, tIndex) =>
-                    tIndex === tableIndex ? table.filter((_, rIndex) => rIndex !== rowIndex) : table
-                ) : pdf
-            );
-
-            return updatedPdfTexts;
-        });
-    };*/
     const handleDeleteClick = (pdfIndex: number, tableIndex: number, rowIndex: number) => {
         setRowToDelete({ pdfIndex, tableIndex, rowIndex });
         setIsDeleteModalOpen(true);
@@ -174,6 +145,15 @@ export const FileProcessing = () => {
 
 
     console.log(pdfTexts);
+    const [showInsertTable, setShowInsertTable] = useState(false);
+    //const [testType, setTestType] = useState<string>("");
+    const handleCreateTableClick = () => {
+        setShowInsertTable(true); // Show the table component when the button is clicked
+        //setTestType(pdfCategories[pdfIndex]);
+        //console.log(pdfCategories);
+    };
+
+
 
     return <>
         <FilesUpload onAddFiles={handleChangeOnFilesUpload}/>
@@ -193,8 +173,6 @@ export const FileProcessing = () => {
             <PDFViewer file={file}/>*/}
         </div>
         ))}
-
-
 
         {pdfTexts.map((pdf, pdfIndex) => (
             <div key={pdfIndex}>
@@ -253,12 +231,28 @@ export const FileProcessing = () => {
                                 ))}
                             </Table.Body>
 
-
                         </Table>
+
                         <br />
                     </div>
                 ))}
+
+                <button onClick={handleCreateTableClick} type="button"
+                        className="text-gray-300 hover:text-white
+                                     border border-gray-500 hover:bg-gray-900
+                                       font-medium rounded-lg
+                                      text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600
+                                       dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600
+                                        ">
+                    {/*  dark:focus:ring-gray-800 focus:ring-gray-300 focus:outline-none  focus:ring-4*/}
+                    Ustvari tabelo
+                </button>
                 <br />
+                <p>{pdfCategories[pdfIndex]}</p>
+                <p>{showInsertTable && pdfCategories[pdfIndex] == 'Butterfly test'}</p>
+                {(showInsertTable && pdfCategories[pdfIndex] =='Butterfly test') && <InsertTableButterfly />}
+
+
             </div>
         ))}
 

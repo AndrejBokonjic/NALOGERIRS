@@ -10,6 +10,7 @@ import {AddingRow} from "./components/addingNewRowTEST.tsx";
 import {TestAddTableFileProcessing} from "./components/TestOrNotInUseComponents/TestAddTableFileProcessing.tsx";
 import {PopUpFileProcessing} from "./components/TestOrNotInUseComponents/PopUpFileProcessing.tsx";
 
+
 function App() {
   //const [count, setCount] = useState(0)
 
@@ -19,6 +20,7 @@ function App() {
         <Pozdrav/>
 
         <FileProcessing/>
+        {/*<InsertTableButterfly/>*/}
 
     {/*<TestAddTableFileProcessing/>*/}
 
