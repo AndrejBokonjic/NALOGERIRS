@@ -238,13 +238,13 @@ export const FileProcessing = () => {
                                             {editingCell && editingCell.pdfIndex === pdfIndex && editingCell.tableIndex === tableIndex && editingCell.rowIndex === rowIndex + 1  ? (
                                                 <>
                                                     <button onClick={() => handleCancelClick(pdfIndex, tableIndex, rowIndex +1)} className="text-base">
-                                                        <FaTimes className="text-red-600" />
+                                                        <FaTimes className="text-red-600 " />
                                                     </button>
                                                 </>
                                             ) : (
                                                 <div className="flex space-x-2">
                                                     <button onClick={() => handleDeleteClick(pdfIndex, tableIndex, rowIndex + 1)} className="bg-red-700 text-sm">
-                                                        <MdDelete className="text-white" />
+                                                        <MdDelete className="text-white h-4 w-4" />
                                                     </button>
                                                 </div>
                                             )}
