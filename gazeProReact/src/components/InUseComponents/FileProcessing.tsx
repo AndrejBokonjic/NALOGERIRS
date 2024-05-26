@@ -8,7 +8,7 @@ import { FaSave, FaTimes } from "react-icons/fa";
 //import { CiEdit } from "react-icons/ci";
 import { MdDelete } from "react-icons/md";
 import DeleteConfirmationModal from "./PopUpDeleteRowConformation.tsx";
-import {InsertTableButterfly} from "./InsertTable.tsx";
+import {InsertTableButterfly} from "../TestOrNotInUseComponents/InsertTable.tsx";
 
 
 export const FileProcessing = () => {
@@ -147,10 +147,34 @@ export const FileProcessing = () => {
     console.log(pdfTexts);
     const [showInsertTable, setShowInsertTable] = useState(false);
     //const [testType, setTestType] = useState<string>("");
-    const handleCreateTableClick = () => {
+    const handleCreateTableClick = (pdfIndex) => {
         setShowInsertTable(true); // Show the table component when the button is clicked
         //setTestType(pdfCategories[pdfIndex]);
         //console.log(pdfCategories);
+
+        const newTable = [
+            ["DIFFICULTY", "TIME ON TARGET", "UNDERSHOOT", "OVERSHOOTS", "AMPLITUDE ACCURACY"],
+            ["Easy", "", "", "", ""],
+            ["Medium", "", "", "", ""],
+            ["Difficult", "", "", "", ""],
+        ];
+
+        //setPdfTexts([...pdfTexts, [newTable]]);
+
+        setPdfTexts((prevPdfTexts) => {
+            const updatedPdfTexts = [...prevPdfTexts];
+            updatedPdfTexts[pdfIndex] = [...updatedPdfTexts[pdfIndex], newTable];
+            return updatedPdfTexts;
+        });
+
+        /*
+        setPdfTexts(prevPdfTexts => {
+            const updatedPdfTexts = [...prevPdfTexts];
+            updatedPdfTexts[pdfIndex].push(newTable);
+            return updatedPdfTexts;
+        });*/
+
+
     };
 
 
@@ -237,7 +261,7 @@ export const FileProcessing = () => {
                     </div>
                 ))}
 
-                <button onClick={handleCreateTableClick} type="button"
+                <button onClick={() => handleCreateTableClick(pdfIndex)} type="button"
                         className="text-gray-300 hover:text-white
                                      border border-gray-500 hover:bg-gray-900
                                        font-medium rounded-lg
@@ -247,10 +271,11 @@ export const FileProcessing = () => {
                     {/*  dark:focus:ring-gray-800 focus:ring-gray-300 focus:outline-none  focus:ring-4*/}
                     Ustvari tabelo
                 </button>
-                <br />
-                <p>{pdfCategories[pdfIndex]}</p>
-                <p>{showInsertTable && pdfCategories[pdfIndex] == 'Butterfly test'}</p>
-                {(showInsertTable && pdfCategories[pdfIndex] =='Butterfly test') && <InsertTableButterfly />}
+
+                {/*<br />*/}
+                {/*<p>{pdfCategories[pdfIndex]}</p>*/}
+                {/*<p>{showInsertTable && pdfCategories[pdfIndex] == 'Butterfly test'}</p>*/}
+                {/*{(showInsertTable && pdfCategories[pdfIndex] =='Butterfly test') && <InsertTableButterfly />}*/}
 
 
             </div>
