@@ -5,11 +5,8 @@ import {Table} from "flowbite-react";
 import "flowbite/dist/flowbite.css";
 import Modal from 'react-modal';
 import { FaSave, FaTimes } from "react-icons/fa";
-//import { CiEdit } from "react-icons/ci";
 import { MdDelete } from "react-icons/md";
 import DeleteConfirmationModal from "./PopUpDeleteRowConformation.tsx";
-import {InsertTableButterfly} from "../TestOrNotInUseComponents/InsertTable.tsx";
-
 
 export const FileProcessing = () => {
 
@@ -19,9 +16,6 @@ export const FileProcessing = () => {
 
     const [editingCell, setEditingCell] = useState<{pdfIndex:number, tableIndex: number; rowIndex: number; cellIndex: number } | null>(null);
     const [cellValue, setCellValue] = useState<string>("");
-    //const [cellIndexClicked, setCellIndexClicked] = useState<number>();
-
-    //const [initialCellValue, setInitialCellValue] = useState<string>("")
     const [initialCellValues, setInitialCellValues] = useState<{ [key: string]: string }>({});
 
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -31,8 +25,6 @@ export const FileProcessing = () => {
 
     const handleChangeOnFilesUpload = (filesUpload: File[])=> {
         console.log(filesUpload);
-
-        //const newFiles = [...files, ...filesUpload];
         setFiles(prevFiles => [...prevFiles, ...filesUpload])
 
         filesUpload.forEach(file => {
@@ -45,7 +37,6 @@ export const FileProcessing = () => {
     useEffect(() => {
         window.electron.ipcRenderer.on('pdf-processed', (event, data) => {
             console.log("response:" + data);
-            //const parsedData = JSON.parse(data);
             setPdfTexts(prevTexts => [...prevTexts, data]);
         });
 
@@ -54,24 +45,11 @@ export const FileProcessing = () => {
 
             console.log("response new categories: "+ data);
         })
-
-        // Clean up the listener on component unmount
         return () => {
             window.electron.ipcRenderer.removeAllListeners('pdf-processed');
             window.electron.ipcRenderer.removeAllListeners('pdf-categorized');
         };
     }, []);
-
-    /*
-    if (pdfTexts.length>0){
-        console.log("TEST TEST");
-        console.log(pdfTexts);
-        console.log(files);
-        console.log("array pdf tables: " + pdfTexts[0]);
-        console.log(typeof pdfTexts[0]);
-    }*/
-
-
     const handleCancelClick = (pdfIndex:number, tableIndex:number, rowIndex:number) => {
         setEditingCell(null);
 
@@ -96,11 +74,6 @@ export const FileProcessing = () => {
         }
         setEditingCell({pdfIndex, tableIndex, rowIndex, cellIndex });
         setCellValue(value);
-
-        /*
-        if (editingCell == null) {
-            setInitialCellValue(value);
-        }*/
     };
 
     console.log(JSON.stringify(initialCellValues, null, 2));
@@ -143,58 +116,27 @@ export const FileProcessing = () => {
         setRowToDelete(null);
     };
 
-
     console.log(pdfTexts);
     const [showInsertTable, setShowInsertTable] = useState(false);
-    //const [testType, setTestType] = useState<string>("");
     const handleCreateTableClick = (pdfIndex) => {
-        setShowInsertTable(true); // Show the table component when the button is clicked
-        //setTestType(pdfCategories[pdfIndex]);
-        //console.log(pdfCategories);
-
+        setShowInsertTable(true);
         const newTable = [
             ["DIFFICULTY", "TIME ON TARGET", "UNDERSHOOT", "OVERSHOOTS", "AMPLITUDE ACCURACY"],
             ["Easy", "", "", "", ""],
             ["Medium", "", "", "", ""],
             ["Difficult", "", "", "", ""],
         ];
-
-        //setPdfTexts([...pdfTexts, [newTable]]);
-
         setPdfTexts((prevPdfTexts) => {
             const updatedPdfTexts = [...prevPdfTexts];
             updatedPdfTexts[pdfIndex] = [...updatedPdfTexts[pdfIndex], newTable];
             return updatedPdfTexts;
         });
-
-        /*
-        setPdfTexts(prevPdfTexts => {
-            const updatedPdfTexts = [...prevPdfTexts];
-            updatedPdfTexts[pdfIndex].push(newTable);
-            return updatedPdfTexts;
-        });*/
-
-
     };
-
-
-
     return <>
         <FilesUpload onAddFiles={handleChangeOnFilesUpload}/>
 
         {pdfTexts.map((file, index) => (
         <div key={index}>
-            {/*<h3>Uploaded File {index + 1}</h3>*/}
-            {/*<PdfTextOnly file={file} />*/}
-            {/*
-            <div>
-                <h3>Extracted Text from File {index + 1}</h3>
-                <pre>{pdfTexts[index]}</pre>
-            </div>
-            */}
-
-            {/* preview od pdf
-            <PDFViewer file={file}/>*/}
         </div>
         ))}
 
@@ -268,16 +210,8 @@ export const FileProcessing = () => {
                                       text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600
                                        dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600
                                         ">
-                    {/*  dark:focus:ring-gray-800 focus:ring-gray-300 focus:outline-none  focus:ring-4*/}
                     Ustvari tabelo
                 </button>
-
-                {/*<br />*/}
-                {/*<p>{pdfCategories[pdfIndex]}</p>*/}
-                {/*<p>{showInsertTable && pdfCategories[pdfIndex] == 'Butterfly test'}</p>*/}
-                {/*{(showInsertTable && pdfCategories[pdfIndex] =='Butterfly test') && <InsertTableButterfly />}*/}
-
-
             </div>
         ))}
 

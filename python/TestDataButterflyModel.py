@@ -6,7 +6,7 @@ import pandas as pd
 with open('Model Butterfly test.pkcls', 'rb') as model_file:
     model = pickle.load(model_file)
 
-print(type(model))  # <class 'Orange.classification.base_classification.SklModelClassification'>
+print(type(model)) 
 
 # Test podatke
 input_data = {

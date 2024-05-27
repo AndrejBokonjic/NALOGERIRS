@@ -13,23 +13,14 @@ function createWindow() {
             nodeIntegration: false,
             contextIsolation: true,
             preload: join(__dirname, 'preload.js'),
-
-
-            //preload:  'preload.js',
         },
     });
 
-    win.loadURL('http://localhost:5173'); // Load your React app URL
+    win.loadURL('http://localhost:5173');
 
     electronReload(__dirname, {});
 
-    /*
-    const startUrl = format({
-        pathname: join(__dirname, 'gazeProReact', 'dist', 'index.html'),
-        protocol: 'file:',
-        slashes: true,
-    });
-    win.loadURL(startUrl);*/
+    
 }
 
 app.whenReady().then(createWindow);
@@ -49,11 +40,6 @@ ipcMain.on('process-pdf', (event, filePath) => {
 
     const pythonProcess = spawn('python', [join(__dirname, './python/pdfReadPlumber.py'), filePath]);
     let dataBuffer = '';
-    /*
-    pythonProcess.stdout.on('data', (data) => {
-        // vratimo podatke nazaj
-        event.reply('pdf-processed', data.toString());
-    });*/
     pythonProcess.stdout.on('data', (data) => {
         dataBuffer += data.toString();
     });
