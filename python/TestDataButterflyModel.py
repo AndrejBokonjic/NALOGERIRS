@@ -24,15 +24,11 @@ input_data = {
     'AA_d_m': [3.47]
 }
 
-# Pretvorimo v data frame
 input_df = pd.DataFrame(input_data)
 
-# Pretvorimo v strukturo razumljivo za model
 domain = Orange.data.Domain([Orange.data.ContinuousVariable(name) for name in input_df.columns])
 
-# Pretvorimo pandas DataFrame v Orange Table (uporablja domain da ustrezno formatira podatke za vnos v model)
 input_table = Orange.data.Table.from_numpy(domain=domain, X=input_df.to_numpy())
 
-# Napoved
 predictions = model(input_table)
 print(predictions)

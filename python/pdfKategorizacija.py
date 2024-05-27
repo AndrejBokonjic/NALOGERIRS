@@ -17,7 +17,6 @@ def categorize_pdf(file_path):
     return "Unknown"
 
 if __name__ == "__main__":
-    #file_path = "C:\\Users\\Admin\\Desktop\\Range Of Motion_2.pdf"  # OVDE IDE PUTANJA
     file_path = sys.argv[1]
     category = categorize_pdf(file_path)
     print(category)

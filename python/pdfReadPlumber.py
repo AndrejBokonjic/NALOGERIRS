@@ -6,6 +6,8 @@ import numpy as np
 
 def extract_text_from_pdf(file_path):
     tables = []
+    excluded_headers = ["SMOOTHNESSOFMOVEMENTS","SmoothnessOfMovements", "smoothnessofmovements","SmoothnessofMovements"]  # Replace with actual headers you want to exclude
+
     with pdfplumber.open(file_path) as pdf:
         for page in pdf.pages:
             page_tables = page.extract_tables()
@@ -13,9 +15,13 @@ def extract_text_from_pdf(file_path):
                 df = pd.DataFrame(table[1:], columns=table[0])
                 df = df.replace({np.nan: None})
                 columns = df.columns.tolist()
+                
+                # Check if the table should be excluded
+                if any(header in columns for header in excluded_headers):
+                    continue
+
                 table_data = [columns]
                 table_data.extend(df.values.tolist())
-
 
                 empty_or_none_cell = 0
                 value_in_cell = 0
@@ -26,10 +32,9 @@ def extract_text_from_pdf(file_path):
                         else:
                             value_in_cell += 1
 
-                # preverimo ali so 50% cells empty or None
+                # Check if 50% of cells are empty or None
                 if value_in_cell > empty_or_none_cell:
-
-                    # zbrisemo vrstice, kje je celotna vrstica "" ali None
+                    # Remove rows where the entire row is "" or None
                     final_table = [row for row in table_data if not all(cell == "" or cell is None for cell in row)]
                     tables.append(final_table)
 
@@ -39,3 +44,4 @@ if __name__ == "__main__":
     file_path = sys.argv[1]
     tables = extract_text_from_pdf(file_path)
     print(json.dumps(tables))
+
