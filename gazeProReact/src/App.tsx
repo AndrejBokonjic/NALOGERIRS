@@ -9,6 +9,7 @@ import {TableTemplate} from "./components/TestOrNotInUseComponents/TableTemplate
 import {AddingRow} from "./components/addingNewRowTEST.tsx";
 import {TestAddTableFileProcessing} from "./components/TestOrNotInUseComponents/TestAddTableFileProcessing.tsx";
 import {PopUpFileProcessing} from "./components/TestOrNotInUseComponents/PopUpFileProcessing.tsx";
+import {FileProcessing2} from "./components/InUseComponents/FileProcessing2.tsx";
 
 
 function App() {
@@ -19,7 +20,7 @@ function App() {
 
         <Pozdrav/>
 
-        <FileProcessing/>
+        <FileProcessing2 />
         {/*<InsertTableButterfly/>*/}
 
     {/*<TestAddTableFileProcessing/>*/}
