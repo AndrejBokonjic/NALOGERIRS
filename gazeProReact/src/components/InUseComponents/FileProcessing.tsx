@@ -50,13 +50,17 @@ export const FileProcessing = () => {
     };
 
     useEffect(() => {
+        //pridobimo tabele iz pdf
         window.electron.ipcRenderer.on("pdf-processed", (event, data) => {
             setPdfTexts((prevTexts) => [...prevTexts, data]);
         });
-
+        // pridobimo imena pdf
         window.electron.ipcRenderer.on("pdf-categorized", (event, data) => {
             setPdfCategories((prevCategories) => [...prevCategories, data]);
         });
+        // pridobimo rezultate (napoved) modela
+        // .....
+
 
         return () => {
             window.electron.ipcRenderer.removeAllListeners("pdf-processed");

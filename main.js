@@ -19,8 +19,6 @@ function createWindow() {
     win.loadURL('http://localhost:5173');
 
     electronReload(__dirname, {});
-
-    
 }
 
 app.whenReady().then(createWindow);
@@ -73,6 +71,21 @@ ipcMain.on('categorize-pdf', (event, filePath) => {
     pythonProcess.on('close', (code) => {
         console.log(`child process exited with code ${code}`);
     });
-
-
 });
+
+ipcMain.on("send-table-to-model", (event, tableData) => {
+
+    const pythonProcess = spawn('python', [join(__dirname, './python/butterflyModel.py'), JSON.stringify(tableData)] );
+
+    pythonProcess.stdout.on('data', (data) => {
+        event.reply('butterfly-model-response', data.toString()); // mozebi i stringify kje treba
+    });
+    pythonProcess.stderr.on('data', (data) => {
+       console.error('stderror: ', data);
+    });
+    pythonProcess.on('close', (code) => {
+        console.log('child process exited with code ', code);
+    })
+
+
+})
