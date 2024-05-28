@@ -7,7 +7,6 @@ import { MdDelete } from "react-icons/md";
 import DeleteConfirmationModal from "./PopUpDeleteRowConformation.tsx";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
-import {content} from "flowbite-react/dist/types/tailwind";
 
 export const FileProcessing2 = () => {
     const [files, setFiles] = useState<File[]>([]);
@@ -32,7 +31,16 @@ export const FileProcessing2 = () => {
     } | null>(null);
 
     const [showInsertTable, setShowInsertTable] = useState(false);
+    const printTableToConsole = (header) => {
+        console.log("Table Data:");
+        console.table(header);
+    };
 
+    useEffect(() => {
+        pdfTexts.forEach((table) => {
+            printTableToConsole(table);
+        });
+    }, [pdfTexts]);
     const handleChangeOnFilesUpload = (filesUpload: File[]) => {
         console.log(filesUpload);
         setFiles((prevFiles) => [...prevFiles, ...filesUpload]);
@@ -171,6 +179,11 @@ export const FileProcessing2 = () => {
                     <h3>
                         {pdfIndex + 1} PDF name: {pdfCategories[pdfIndex]}
                     </h3>
+                    {Array.isArray(pdf) ? (
+            <p>pdf is an array</p>
+        ) : (
+            <p>pdf is NOT an array</p>
+        )}
                     {pdf.map((table, tableIndex) => (
                         <div key={tableIndex} className="overflow-x-auto">
                             <Popup

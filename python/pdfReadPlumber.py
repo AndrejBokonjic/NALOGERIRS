@@ -6,7 +6,7 @@ import numpy as np
 import re
 
 def clean_cell(cell):
-
+    """Remove the values inside parentheses from a cell"""
     if cell is None:
         return cell
     return re.sub(r'\(.*?\)', '', cell).strip()
@@ -23,13 +23,21 @@ def extract_text_from_pdf(file_path):
                 df = df.replace({np.nan: None})
                 columns = df.columns.tolist()
                 
-
+                # Check if the table should be excluded
                 if any(header in columns for header in excluded_headers):
                     continue
 
-
+                # Clean the column headers and table cells
                 columns = [clean_cell(col) for col in columns]
                 df = df.applymap(lambda cell: clean_cell(cell) if isinstance(cell, str) else cell)
+
+                # Find the indices of all cells containing the string "2SD"
+                sd_indices = [(i, j) for i in range(len(df)) for j in range(len(df.columns)) if df.iloc[i, j] == '2SD']
+
+                # Delete cells directly below each "2SD" cell
+                for i, j in sd_indices:
+                    for k in range(i, len(df)): 
+                        df.iloc[k, j] = None
 
                 table_data = [columns]
                 table_data.extend(df.values.tolist())
@@ -43,9 +51,7 @@ def extract_text_from_pdf(file_path):
                         else:
                             value_in_cell += 1
 
-
-                if value_in_cell > empty_or_none_cell:
-
+                if 2*value_in_cell > empty_or_none_cell:
                     final_table = [row for row in table_data if not all(cell == "" or cell is None for cell in row)]
                     tables.append(final_table)
 
