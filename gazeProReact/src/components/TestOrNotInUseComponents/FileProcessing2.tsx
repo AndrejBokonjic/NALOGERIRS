@@ -1,10 +1,10 @@
-import { FilesUpload } from "./FilesUpload.tsx";
+import { FilesUpload } from "../InUseComponents/FilesUpload.tsx";
 import React, { useEffect, useState } from "react";
 import { Table } from "flowbite-react";
 import "flowbite/dist/flowbite.css";
 import { FaSave, FaTimes } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import DeleteConfirmationModal from "./PopUpDeleteRowConformation.tsx";
+import DeleteConfirmationModal from "../InUseComponents/PopUpDeleteRowConformation.tsx";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 
@@ -166,6 +166,11 @@ export const FileProcessing2 = () => {
         });
     };
 
+    const handleDeletePdf = (pdfIndex) => {
+        setPdfTexts((prevPdfTexts) => prevPdfTexts.filter((_, pIndex) => pIndex !== pdfIndex));
+        setPdfCategories((prevCategories) => prevCategories.filter((_, cIndex) => cIndex !== pdfIndex));
+    };
+
     return (
         <>
             <FilesUpload onAddFiles={handleChangeOnFilesUpload} />
@@ -178,6 +183,9 @@ export const FileProcessing2 = () => {
                 <div key={pdfIndex}>
                     <h3>
                         {pdfIndex + 1} PDF name: {pdfCategories[pdfIndex]}
+                        <button onClick={() => handleDeletePdf(pdfIndex)} className="bg-red-700 text-sm ml-2">
+                            <MdDelete className="text-white h-4 w-4"/>
+                        </button>
                     </h3>
                     {Array.isArray(pdf) ? (
             <p>pdf is an array</p>
@@ -201,7 +209,8 @@ export const FileProcessing2 = () => {
                                             </Table.Head>
                                             <Table.Body className="divide-y">
                                                 {table.slice(1).map((row, rowIndex) => (
-                                                    <Table.Row key={rowIndex + 1} className="bg-gray-100 dark:border-gray-800 dark:bg-gray-800">
+                                                    <Table.Row key={rowIndex + 1}
+                                                               className="bg-gray-100 dark:border-gray-800 dark:bg-gray-800">
                                                         {row.map((cell: string, cellIndex: number) => (
                                                             <Table.Cell
                                                                 key={cellIndex}
@@ -230,14 +239,18 @@ export const FileProcessing2 = () => {
                                                             editingCell.tableIndex === tableIndex &&
                                                             editingCell.rowIndex === rowIndex + 1 ? (
                                                                 <>
-                                                                    <button onClick={() => handleCancelClick(pdfIndex, tableIndex, rowIndex + 1)} className="text-base">
-                                                                        <FaTimes className="text-red-600 " />
+                                                                    <button
+                                                                        onClick={() => handleCancelClick(pdfIndex, tableIndex, rowIndex + 1)}
+                                                                        className="text-base">
+                                                                        <FaTimes className="text-red-600 "/>
                                                                     </button>
                                                                 </>
                                                             ) : (
                                                                 <div className="flex space-x-2">
-                                                                    <button onClick={() => handleDeleteClick(pdfIndex, tableIndex, rowIndex + 1)} className="bg-red-700 text-sm">
-                                                                        <MdDelete className="text-white h-4 w-4" />
+                                                                    <button
+                                                                        onClick={() => handleDeleteClick(pdfIndex, tableIndex, rowIndex + 1)}
+                                                                        className="bg-red-700 text-sm">
+                                                                        <MdDelete className="text-white h-4 w-4"/>
                                                                     </button>
                                                                 </div>
                                                             )}
@@ -259,7 +272,7 @@ export const FileProcessing2 = () => {
                                 }}
 
                             >
-                                <div >
+                                <div>
                                     <button
                                         onClick={() => handleRemoveTable(pdfIndex, tableIndex)}
                                         className="text-red-600 hover:text-white border border-red-500 hover:bg-red-900 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
@@ -268,7 +281,7 @@ export const FileProcessing2 = () => {
                                     </button>
                                 </div>
                             </Popup>
-                            <br />
+                            <br/>
                         </div>
                     ))}
 
