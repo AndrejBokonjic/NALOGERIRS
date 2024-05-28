@@ -1,10 +1,10 @@
-import { FilesUpload } from "./FilesUpload.tsx";
+import { FilesUpload } from "../InUseComponents/FilesUpload.tsx";
 import React, { useEffect, useState } from "react";
 import { Table } from "flowbite-react";
 import "flowbite/dist/flowbite.css";
 import { FaSave, FaTimes } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import DeleteConfirmationModal from "./PopUpDeleteRowConformation.tsx";
+import DeleteConfirmationModal from "../InUseComponents/PopUpDeleteRowConformation.tsx";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import {content} from "flowbite-react/dist/types/tailwind";

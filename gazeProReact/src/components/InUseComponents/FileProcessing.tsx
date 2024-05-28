@@ -172,8 +172,8 @@ export const FileProcessing = () => {
             visible: true,
             pdfIndex,
             tableIndex,
-            x: event.clientX,
-            y: event.clientY,
+            x: event.clientX + window.scrollX,
+            y: event.clientY + window.scrollY,
         });
         document.addEventListener('click', handleDocumentClick);
     };
@@ -187,6 +187,12 @@ export const FileProcessing = () => {
         document.removeEventListener('click', handleDocumentClick);
     };
 
+    const handleDeletePdf = (pdfIndex) => {
+        setPdfTexts((prevPdfTexts) => prevPdfTexts.filter((_, pIndex) => pIndex !== pdfIndex));
+        setPdfCategories((prevCategories) => prevCategories.filter((_, cIndex) => cIndex !== pdfIndex));
+    };
+
+
     return (
         <>
             <FilesUpload onAddFiles={handleChangeOnFilesUpload} />
@@ -199,6 +205,9 @@ export const FileProcessing = () => {
                 <div key={pdfIndex}>
                     <h3>
                         {pdfIndex + 1} PDF name: {pdfCategories[pdfIndex]}
+                        <button onClick={() => handleDeletePdf(pdfIndex)} className="bg-red-700 text-sm ml-2">
+                            <MdDelete className="text-white h-4 w-4"/>
+                        </button>
                     </h3>
                     {pdf.map((table, tableIndex) => (
                         <div
@@ -298,7 +307,8 @@ export const FileProcessing = () => {
                                 contextMenuVisible.pdfIndex === pdfIndex &&
                                 contextMenuVisible.tableIndex === tableIndex && (
                                     <div
-                                        className="absolute bg-white border rounded shadow-lg p-2"
+                                        className="absolute  rounded  p-2"
+                                        // *  bg-white border*/}
                                         style={{ top: contextMenuVisible.y, left: contextMenuVisible.x }}
                                         onClick={closeContextMenu}
                                     >
