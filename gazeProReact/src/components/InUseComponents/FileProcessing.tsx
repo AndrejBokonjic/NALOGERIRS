@@ -7,6 +7,7 @@ import { MdDelete } from "react-icons/md";
 import DeleteConfirmationModal from "./PopUpDeleteRowConformation.tsx";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
+import {LoadingAnimation} from "./LoadingAnimation.tsx";
 
 export const FileProcessing = () => {
     const [files, setFiles] = useState<File[]>([]);
@@ -22,6 +23,7 @@ export const FileProcessing = () => {
     const [initialCellValues, setInitialCellValues] = useState<{
         [key: string]: string;
     }>({});
+
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [rowToDelete, setRowToDelete] = useState<{
         pdfIndex: number;
@@ -190,6 +192,8 @@ export const FileProcessing = () => {
     const handleDeletePdf = (pdfIndex) => {
         setPdfTexts((prevPdfTexts) => prevPdfTexts.filter((_, pIndex) => pIndex !== pdfIndex));
         setPdfCategories((prevCategories) => prevCategories.filter((_, cIndex) => cIndex !== pdfIndex));
+
+        setFiles((prevFiles) => prevFiles.filter((_, fIndex) => fIndex !== pdfIndex));
     };
 
 
@@ -197,10 +201,19 @@ export const FileProcessing = () => {
         <>
             <FilesUpload onAddFiles={handleChangeOnFilesUpload} />
 
+
+
+
             {pdfTexts.map((file, index) => (
                 <div key={index}></div>
             ))}
 
+
+
+            {files.length !== pdfTexts.length ? (
+                <LoadingAnimation/>
+            ): (
+            <div>
             {pdfTexts.map((pdf, pdfIndex) => (
                 <div key={pdfIndex}>
                     <h3>
@@ -320,10 +333,11 @@ export const FileProcessing = () => {
                                         </button>
                                     </div>
                                 )}
-                            <br />
+
+                            {tableIndex < pdf.length-1 && <br />}
                         </div>
                     ))}
-
+                    <br/>
                     <button
                         onClick={() => handleCreateTableClick(pdfIndex)}
                         type="button"
@@ -333,6 +347,10 @@ export const FileProcessing = () => {
                     </button>
                 </div>
             ))}
+
+            </div>
+
+            )}
 
             <DeleteConfirmationModal
                 isOpen={isDeleteModalOpen}
