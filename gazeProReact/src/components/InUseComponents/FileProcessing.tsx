@@ -196,6 +196,20 @@ export const FileProcessing = () => {
         setFiles((prevFiles) => prevFiles.filter((_, fIndex) => fIndex !== pdfIndex));
     };
 
+    const handleDobiSporocilo = (pdfName: string) => {
+        switch (pdfName){
+            case 'Butterfly test':
+                console.log('POSLJI V BUTTEFLY TEST');
+                break;
+            case 'Head neck relocation test':
+                console.log("poslji v head beck...");
+                break;
+            case 'Range of motion':
+                console.log("posji range of motion");
+        }
+
+    }
+
 
     return (
         <>
@@ -327,24 +341,44 @@ export const FileProcessing = () => {
                                     >
                                         <button
                                             onClick={() => handleRemoveTable(pdfIndex, tableIndex)}
-                                            className="text-red-600 hover:text-white border border-red-500 hover:bg-red-900 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-                                        >
+                                            className="text-red-600 hover:text-white border
+                                            border-red-500 hover:bg-red-900 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
                                             Zbrisi tabelo
                                         </button>
                                     </div>
                                 )}
 
                             {tableIndex < pdf.length-1 && <br />}
+
                         </div>
                     ))}
                     <br/>
+
+                    <div className="flex justify-between mb-2">
                     <button
                         onClick={() => handleCreateTableClick(pdfIndex)}
                         type="button"
-                        className="text-gray-300 hover:text-white border border-gray-500 hover:bg-gray-900 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600"
+                        className="text-gray-300  hover:text-white border border-gray-500 hover:bg-gray-900
+                        font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-500
+                         dark:hover:text-white dark:hover:bg-gray-600 "
                     >
                         Ustvari tabelo
                     </button>
+
+                    <button type="button" onClick={() => handleDobiSporocilo(pdfCategories[pdfIndex])}
+                            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none
+                             focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex
+                              items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        Dobi sporočilo
+                        <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true"
+                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
+                                  strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+                        </svg>
+                    </button>
+                    </div>
+
+
                 </div>
             ))}
 
