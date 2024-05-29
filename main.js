@@ -73,9 +73,11 @@ ipcMain.on('categorize-pdf', (event, filePath) => {
     });
 });
 
-ipcMain.on("send-table-to-model", (event, tableData) => {
+ipcMain.on("send-table-to-butterfly-model", (event, tableData) => {
 
     const pythonProcess = spawn('python', [join(__dirname, './python/butterflyModel.py'), JSON.stringify(tableData)] );
+
+    console.log("butterfly tabele: ", tableData);
 
     pythonProcess.stdout.on('data', (data) => {
         event.reply('butterfly-model-response', data.toString()); // mozebi i stringify kje treba
@@ -88,4 +90,4 @@ ipcMain.on("send-table-to-model", (event, tableData) => {
     })
 
 
-})
+});

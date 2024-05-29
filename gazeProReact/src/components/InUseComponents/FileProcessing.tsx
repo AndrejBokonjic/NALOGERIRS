@@ -58,13 +58,16 @@ export const FileProcessing = () => {
         window.electron.ipcRenderer.on("pdf-categorized", (event, data) => {
             setPdfCategories((prevCategories) => [...prevCategories, data]);
         });
-        // pridobimo rezultate (napoved) modela
-        // .....
+        // pridobimo rezultate (napoved) butterfly modela
+        window.electron.ipcRenderer.on('butterfly-model-response', (event, data) => {
+            // shranimo rezultat napoveda
+        })
 
 
         return () => {
             window.electron.ipcRenderer.removeAllListeners("pdf-processed");
             window.electron.ipcRenderer.removeAllListeners("pdf-categorized");
+            window.electron.ipcRenderer.removeAllListeners('butterfly-model-response');
         };
     }, []);
 
@@ -219,19 +222,23 @@ export const FileProcessing = () => {
         setFiles((prevFiles) => prevFiles.filter((_, fIndex) => fIndex !== pdfIndex));
     };
 
-    const handleDobiSporocilo = (pdfName: string) => {
-        switch (pdfName){
+    const handleDobiSporocilo = (pdfIndex:number) => {
+        const tabele = pdfTexts[pdfIndex];
+
+        switch (pdfCategories[pdfIndex]){
             case 'Butterfly test':
                 console.log('POSLJI V BUTTEFLY TEST');
+                console.log("pdf tabele butterfly test", tabele);
+                window.electron.ipcRenderer.send('send-table-to-butterfly-model', tabele);
                 break;
             case 'Head neck relocation test':
-                console.log("poslji v head beck...");
+                console.log("poslji v head back...");
                 break;
             case 'Range of motion':
                 console.log("posji range of motion");
         }
 
-    }
+    };
 
 
     return (
@@ -388,7 +395,7 @@ export const FileProcessing = () => {
                         Ustvari tabelo
                     </button>
 
-                    <button type="button" onClick={() => handleDobiSporocilo(pdfCategories[pdfIndex])}
+                    <button type="button" onClick={() => handleDobiSporocilo(pdfIndex)}
                             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none
                              focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex
                               items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
