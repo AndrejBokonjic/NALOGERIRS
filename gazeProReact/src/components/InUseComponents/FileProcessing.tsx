@@ -146,17 +146,36 @@ export const FileProcessing = () => {
 
     const handleCreateTableClick = (pdfIndex) => {
         setShowInsertTable(true);
-        const newTable = [
+        const newButterflyTestTable = [
             ["DIFFICULTY", "TIME ON TARGET", "UNDERSHOOT", "OVERSHOOTS", "AMPLITUDE ACCURACY"],
             ["Easy", "", "", "", ""],
             ["Medium", "", "", "", ""],
             ["Difficult", "", "", "", ""],
         ];
-        setPdfTexts((prevPdfTexts) => {
-            const updatedPdfTexts = [...prevPdfTexts];
-            updatedPdfTexts[pdfIndex] = [...updatedPdfTexts[pdfIndex], newTable];
-            return updatedPdfTexts;
-        });
+
+        const newHeadNeckRelocationTestTable = [
+            ["RELOCATION FROM", "ABSOLUTE ERROR°", "CONSTANT ERROR°", "VARIABLE ERROR°"],
+            ["Turning Left","", "", ""],
+            ["TurningRight" ,"", "", ""],
+            ["Forward Bending", "", "", ""],
+            ["BackwardBending","", "", ""],
+        ];
+        switch (pdfCategories[pdfIndex]){
+            case "Butterfly test":
+                setPdfTexts((prevPdfTexts) => {
+                    const updatedPdfTexts = [...prevPdfTexts];
+                    updatedPdfTexts[pdfIndex] = [...updatedPdfTexts[pdfIndex], newButterflyTestTable];
+                    return updatedPdfTexts;
+                });
+                break;
+            case "Head neck relocation test":
+                setPdfTexts((prevPdfTexts) => {
+                    const updatedPdfTexts = [...prevPdfTexts];
+                    updatedPdfTexts[pdfIndex] = [...updatedPdfTexts[pdfIndex], newHeadNeckRelocationTestTable];
+                    return updatedPdfTexts;
+                });
+                break;
+        }
     };
 
 
