@@ -44,7 +44,7 @@ def get_prediction(model, input_table):
 def main():
     input_data = sys.argv[1]
 
-    model = load_model('./ML models/ModelButterflyTest.pkcls')
+    model = load_model("python/MLmodels/ModelButterflyTest.pkcls")
 
     input_df = parse_input_data(input_data)
 
