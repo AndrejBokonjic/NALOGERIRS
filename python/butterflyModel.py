@@ -25,6 +25,7 @@ def parse_input_data(input_data):
     #         'AA_m_m': [2.30],
     #         'AA_d_m': [3.47]
     # POMEMBAN JE VRSTNI RED
+    # napoved: .3 (pomeni 4 cluster, ker zacne iz 0)
 
 def create_orange_table(input_df):
     domain = Orange.data.Domain([Orange.data.ContinuousVariable(name) for name in input_df.columns])
