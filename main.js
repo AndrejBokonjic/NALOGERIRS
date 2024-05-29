@@ -83,7 +83,7 @@ ipcMain.on("send-table-to-butterfly-model", (event, tableData) => {
         event.reply('butterfly-model-response', data.toString()); // mozebi i stringify kje treba
     });
     pythonProcess.stderr.on('data', (data) => {
-       console.error('stderror: ', data);
+       console.error('stderr: ', data);
     });
     pythonProcess.on('close', (code) => {
         console.log('child process exited with code ', code);

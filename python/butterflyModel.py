@@ -11,6 +11,10 @@ def load_model(model_path):
     return model
 
 def parse_input_data(input_data):
+    parsed_data = json.loads(input_data)
+    df = pd.DataFrame(parsed_data)
+    return df
+
     #...
     #     'ToT_e_m': [77.61],
     #         'ToT_m_m': [48.57],
