@@ -14,10 +14,13 @@ export const extractHeadNeckTestData = (tabele) => {
         HNRT_Verr_b: []
     };
 
+    const errors:string[]=[];
+
     console.log("HNRTCERRB pre punjenja", result.HNRT_Cerr_b);
 
     tabele.forEach((table, tableIndex) => {
         if (!table || table.length === 0) {
+            errors.push(`Table ${tableIndex + 1} has no data.`);
             console.error(`Table ${tableIndex + 1} has no data.`);
             return;
         }
@@ -25,6 +28,7 @@ export const extractHeadNeckTestData = (tabele) => {
         const headers = table[0];
         console.log("headers prva provera", headers);
         if (!headers || headers.length === 0) {
+            errors.push(`Table ${tableIndex + 1} has no headers.`);
             console.error(`Table ${tableIndex + 1} has no headers.`);
             return;
         }
@@ -40,18 +44,21 @@ export const extractHeadNeckTestData = (tabele) => {
         for (let rowIndex = 1; rowIndex < table.length; rowIndex++) {
             const row = table[rowIndex];
             if (!row || row.length === 0) {
+                errors.push(`Row ${rowIndex} in table ${tableIndex + 1} is empty.`);
                 console.error(`Row ${rowIndex} in table ${tableIndex + 1} is empty.`);
                 continue;
             }
 
             const category = row[0];
             if (!category) {
+                errors.push(`Row ${rowIndex} in table ${tableIndex + 1} does not have a category.`);
                 console.error(`Row ${rowIndex} in table ${tableIndex + 1} does not have a category.`);
                 continue;
             }
 
             const absoluteCellValue = row[absoluteIndex];
             if (absoluteCellValue === undefined || absoluteCellValue === null) {
+                errors.push(`No value found for 'Absolute error' in row ${rowIndex} of table ${tableIndex + 1}.`);
                 console.error(`No value found for 'Absolute error' in row ${rowIndex} of table ${tableIndex + 1}.`);
                 continue;
             }
@@ -79,6 +86,7 @@ export const extractHeadNeckTestData = (tabele) => {
 
     tabele.forEach((table, tableIndex) => {
         if (!table || table.length === 0) {
+            errors.push(`Table ${tableIndex + 1} has no data.`);
             console.error(`Table ${tableIndex + 1} has no data.`);
             return;
         }
@@ -86,6 +94,7 @@ export const extractHeadNeckTestData = (tabele) => {
         const headers = table[0];
         console.log("headers prva provera",headers)
         if (!headers || headers.length === 0) {
+            errors.push(`Table ${tableIndex + 1} has no headers.`);
             console.error(`Table ${tableIndex + 1} has no headers.`);
             return;
         }
@@ -105,18 +114,21 @@ export const extractHeadNeckTestData = (tabele) => {
         for (let rowIndex = 1; rowIndex < table.length; rowIndex++) {
             const row = table[rowIndex];
             if (!row || row.length === 0) {
+                errors.push(`Row ${rowIndex} in table ${tableIndex + 1} is empty.`);
                 console.error(`Row ${rowIndex} in table ${tableIndex + 1} is empty.`);
                 continue;
             }
 
             const category = row[0];
             if (!category) {
+                errors.push(`Row ${rowIndex} in table ${tableIndex + 1} does not have a category.`);
                 console.error(`Row ${rowIndex} in table ${tableIndex + 1} does not have a category.`);
                 continue;
             }
 
             const constantCellValue = row[constantIndex];
             if (!constantCellValue) {
+                errors.push(`No value found for 'Constant error' in row ${rowIndex} of table ${tableIndex + 1}.`);
                 console.error(`No value found for 'Constant error' in row ${rowIndex} of table ${tableIndex + 1}.`);
                 continue;
             }
@@ -155,18 +167,21 @@ export const extractHeadNeckTestData = (tabele) => {
         for (let rowIndex = 1; rowIndex < table.length; rowIndex++) {
             const row = table[rowIndex];
             if (!row || row.length === 0) {
+                errors.push(`Row ${rowIndex} in table ${tableIndex + 1} is empty.`);
                 console.error(`Row ${rowIndex} in table ${tableIndex + 1} is empty.`);
                 continue;
             }
 
             const category = row[0];
             if (!category) {
+                errors.push(`Row ${rowIndex} in table ${tableIndex + 1} does not have a category.`);
                 console.error(`Row ${rowIndex} in table ${tableIndex + 1} does not have a category.`);
                 continue;
             }
 
             const variableCellValue = row[variableIndex];
             if (!variableCellValue) {
+                errors.push(`No value found for 'Variable Error' in row ${rowIndex} of table ${tableIndex + 1}.`);
                 console.error(`No value found for 'Variable Error' in row ${rowIndex} of table ${tableIndex + 1}.`);
                 continue;
             }
@@ -195,5 +210,5 @@ export const extractHeadNeckTestData = (tabele) => {
     console.log("HNRTCERRB posle punjenja",result.HNRT_Cerr_b)
 
     console.log('Extracted Butterfly Test Data:', result);
-    return result;
+    return {result, errors};
 };

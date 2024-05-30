@@ -236,10 +236,12 @@ export const FileProcessing = () => {
 
     const handleDobiSporocilo = (pdfIndex) => {
         const tabele = pdfTexts[pdfIndex];
-    
+
+        let result, errors:string[];
+
         switch (pdfCategories[pdfIndex]) {
             case 'Butterfly test':
-                const {result, errors} = extractButterflyTestData(tabele);
+                ({result, errors} = extractButterflyTestData(tabele));
                 console.log('POSLJI V BUTTEFLY TEST', result);
                 console.log("NAPAKE: ", errors);
 
@@ -250,16 +252,30 @@ export const FileProcessing = () => {
                         updatedPdfErrors.push({pdfIndex, errors});
                     }
                     return updatedPdfErrors;
-                })
+                });
 
                 if (errors.length ===0 ){
                     window.electron.ipcRenderer.send('send-table-to-butterfly-model', result);
                 }
                 break;
             case 'Head neck relocation test':
-                const extractedData2 = extractHeadNeckTestData(tabele);
-                console.log('POSLJI V HEAD-NECK TEST', extractedData2);
-                window.electron.ipcRenderer.send('send-table-to-head-neck-model', extractedData2);
+
+                ({result, errors} = extractHeadNeckTestData(tabele));
+
+                setPdfErrors(prevPdfErrors => {
+                    const updatedPdfErrors =
+                        prevPdfErrors.filter(errorObject => errorObject.pdfIndex !== pdfIndex);
+                    if (errors.length >0){
+                        updatedPdfErrors.push({pdfIndex, errors});
+                    }
+                    return updatedPdfErrors;
+                });
+
+                if (errors.length === 0){
+                    console.log('POSLJI V HEAD-NECK TEST', result);
+                    window.electron.ipcRenderer.send('send-table-to-head-neck-model', result);
+                }
+                
                 break;
             case 'Range of motion':
                 console.log("posji range of motion");
