@@ -89,6 +89,22 @@ ipcMain.on("send-table-to-butterfly-model", (event, tableData) => {
     pythonProcess.on('close', (code) => {
         console.log('child process exited with code ', code);
     })
+});
 
+ipcMain.on("send-table-to-head-neck-model", (event, tableData) => {
 
+    const pythonProcess = spawn('python', [join(__dirname, './python/headneckModel.py'), JSON.stringify(tableData)] );
+
+    console.log("head-neck tabele: ", tableData);
+
+    pythonProcess.stdout.on('data', (data) => {
+        console.log("prediction: "+ data.toString());
+        event.reply('head-neck-model-response', data.toString());
+    });
+    pythonProcess.stderr.on('data', (data) => {
+       console.error('stderr: ', data.toString());
+    });
+    pythonProcess.on('close', (code) => {
+        console.log('child process exited with code ', code);
+    });
 });

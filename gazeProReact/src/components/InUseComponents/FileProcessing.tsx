@@ -10,6 +10,7 @@ import "reactjs-popup/dist/index.css";
 import {LoadingAnimation} from "./LoadingAnimation.tsx";
 
 import {extractButterflyTestData} from "./ExtractButterflyTestData.tsx";
+import {extractHeadNeckTestData} from "./ExtractHeadNeckTestData.tsx";
 
 
 export const FileProcessing = () => {
@@ -65,12 +66,16 @@ export const FileProcessing = () => {
         window.electron.ipcRenderer.on('butterfly-model-response', (event, data) => {
             // shranimo rezultat napoveda
         })
+        window.electron.ipcRenderer.on('head-neck-model-response', (event, data) => {
+            // shranimo rezultat napoveda
+        })
 
 
         return () => {
             window.electron.ipcRenderer.removeAllListeners("pdf-processed");
             window.electron.ipcRenderer.removeAllListeners("pdf-categorized");
             window.electron.ipcRenderer.removeAllListeners('butterfly-model-response');
+            window.electron.ipcRenderer.removeAllListeners('head-neck-model-response');
         };
     }, []);
 
@@ -232,11 +237,13 @@ export const FileProcessing = () => {
         switch (pdfCategories[pdfIndex]) {
             case 'Butterfly test':
                 const extractedData = extractButterflyTestData(tabele);
-                console.log('POSLJI V BUTTEFLY TEST', extractedData);
+                console.log('POSLJI V BUTTERFLY TEST', extractedData);
                 window.electron.ipcRenderer.send('send-table-to-butterfly-model', extractedData);
                 break;
             case 'Head neck relocation test':
-                console.log("poslji v head back...");
+                const extractedData2 = extractHeadNeckTestData(tabele);
+                console.log('POSLJI V HEAD-NECK TEST', extractedData2);
+                window.electron.ipcRenderer.send('send-table-to-head-neck-model', extractedData2);
                 break;
             case 'Range of motion':
                 console.log("posji range of motion");
@@ -392,7 +399,7 @@ export const FileProcessing = () => {
                     <button
                         onClick={() => handleCreateTableClick(pdfIndex)}
                         type="button"
-                        className="text-gray-300  hover:text-white border border-gray-500 hover:bg-gray-900
+                        className="text-gray-400  hover:text-white border border-gray-500 hover:bg-gray-900
                         font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-500
                          dark:hover:text-white dark:hover:bg-gray-600 "
                     >

@@ -56,7 +56,7 @@ export const extractButterflyTestData = (tabele) => {
 
             const amplitudeCellValue = row[amplitudeIndex];
             if (!amplitudeCellValue) {
-                console.error(`No value found for 'Undershoots' in row ${rowIndex} of table ${tableIndex + 1}.`);
+                console.error(`No value found for 'Amplitude' in row ${rowIndex} of table ${tableIndex + 1}.`);
                 continue;
             }
 
@@ -214,7 +214,7 @@ export const extractButterflyTestData = (tabele) => {
 
             const ToTCellValue = row[ToTIndex];
             if (!ToTCellValue) {
-                console.error(`No value found for 'Undershoots' in row ${rowIndex} of table ${tableIndex + 1}.`);
+                console.error(`No value found for 'Time on Target' in row ${rowIndex} of table ${tableIndex + 1}.`);
                 continue;
             }
 
