@@ -231,14 +231,32 @@ export const FileProcessing = () => {
         setFiles((prevFiles) => prevFiles.filter((_, fIndex) => fIndex !== pdfIndex));
     };
 
+    const [pdfErrors, setPdfErrors]
+        = useState<Array<{pdfIndex: number, errors:string[]}>>([]);
+
     const handleDobiSporocilo = (pdfIndex) => {
         const tabele = pdfTexts[pdfIndex];
     
         switch (pdfCategories[pdfIndex]) {
             case 'Butterfly test':
-                const extractedData = extractButterflyTestData(tabele);
-                console.log('POSLJI V BUTTERFLY TEST', extractedData);
-                window.electron.ipcRenderer.send('send-table-to-butterfly-model', extractedData);
+                const {result, errors} = extractButterflyTestData(tabele);
+                console.log('POSLJI V BUTTEFLY TEST', result);
+                console.log("NAPAKE: ", errors);
+
+                setPdfErrors(prevPdfErrors => {
+                    const updatedPdfErrors =
+                        prevPdfErrors.filter(errorObject => errorObject.pdfIndex !== pdfIndex);
+                    if (errors.length >0){
+                        updatedPdfErrors.push({pdfIndex, errors});
+                    }
+                    return updatedPdfErrors;
+                })
+
+                if (errors.length ===0 ){
+                    window.electron.ipcRenderer.send('send-table-to-butterfly-model', result);
+                }
+
+>>>>>>> 8a7ba3a660b5110590fa6a95927a9753da38b3ea
                 break;
             case 'Head neck relocation test':
                 const extractedData2 = extractHeadNeckTestData(tabele);
@@ -255,8 +273,6 @@ export const FileProcessing = () => {
     return (
         <>
             <FilesUpload onAddFiles={handleChangeOnFilesUpload} />
-
-
 
 
             {pdfTexts.map((file, index) => (
@@ -418,6 +434,25 @@ export const FileProcessing = () => {
                         </svg>
                     </button>
                     </div>
+
+                    {/*{pdfErrors[pdfIndex].pdfIndex == pdfIndex && (*/}
+                    {/*    pdfErrors[pdfIndex].errors.map(error => {*/}
+                    {/*        <p>{error}</p>*/}
+                    {/*    })*/}
+                    {/*)}*/}
+                    {pdfErrors
+                        .filter(errorObject => errorObject.pdfIndex === pdfIndex)
+                        .map((errorObject, errorIndex) => (
+                        <div key={errorIndex}>
+                            <h2 className="font-bold text-red-500 text-lg mb-2">Popravite naslednje napake v tabeli, preden poskusite znova: </h2>
+                            {errorObject.errors.map((error, errorIndex) => (
+                                    <p key={errorIndex}>{error}</p>
+                                ))}
+                            <br/>
+                        </div>
+
+                    ))}
+
 
 
                 </div>

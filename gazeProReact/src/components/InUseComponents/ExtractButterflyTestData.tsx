@@ -14,10 +14,13 @@ export const extractButterflyTestData = (tabele) => {
         AA_d_m: []
     };
 
+    const errors:string[] = [];
+
     //console.log("TOTEM pre punjenja",result.ToT_e_m)
 
     tabele.forEach((table, tableIndex) => {
         if (!table || table.length === 0) {
+            errors.push(`Table ${tableIndex + 1} has no data.`);
             console.error(`Table ${tableIndex + 1} has no data.`);
             return;
         }
@@ -25,6 +28,7 @@ export const extractButterflyTestData = (tabele) => {
         const headers = table[0];
         console.log("headers prva provera",headers)
         if (!headers || headers.length === 0) {
+            errors.push(`Table ${tableIndex + 1} has no headers.`);
             console.error(`Table ${tableIndex + 1} has no headers.`);
             return;
         }
@@ -37,6 +41,7 @@ export const extractButterflyTestData = (tabele) => {
         }
 
         if (amplitudeIndex === -1) {
+            //errors.push(`'TimeonTarget' column not found in table ${tableIndex + 1}.`);
             console.log(`'TimeonTarget' column not found in table ${tableIndex + 1}.`);
             return;
         }
@@ -44,19 +49,22 @@ export const extractButterflyTestData = (tabele) => {
         for (let rowIndex = 1; rowIndex < table.length; rowIndex++) {
             const row = table[rowIndex];
             if (!row || row.length === 0) {
+                errors.push(`Row ${rowIndex} in table ${tableIndex + 1} is empty.`);
                 console.error(`Row ${rowIndex} in table ${tableIndex + 1} is empty.`);
                 continue;
             }
 
             const category = row[0];
             if (!category) {
+                errors.push(`Row ${rowIndex} in table ${tableIndex + 1} does not have a category.`);
                 console.error(`Row ${rowIndex} in table ${tableIndex + 1} does not have a category.`);
                 continue;
             }
 
             const amplitudeCellValue = row[amplitudeIndex];
             if (!amplitudeCellValue) {
-                console.error(`No value found for 'Amplitude' in row ${rowIndex} of table ${tableIndex + 1}.`);
+                errors.push(`No value found for 'Undershoots' in row ${rowIndex} of table ${tableIndex + 1}.`);
+                console.error(`No value found for 'Undershoots' in row ${rowIndex} of table ${tableIndex + 1}.`);
                 continue;
             }
 
@@ -80,6 +88,7 @@ export const extractButterflyTestData = (tabele) => {
 
     tabele.forEach((table, tableIndex) => {
         if (!table || table.length === 0) {
+            errors.push(`Table ${tableIndex + 1} has no data.`);
             console.error(`Table ${tableIndex + 1} has no data.`);
             return;
         }
@@ -87,6 +96,7 @@ export const extractButterflyTestData = (tabele) => {
         const headers = table[0];
         console.log("headers prva provera",headers)
         if (!headers || headers.length === 0) {
+            errors.push(`Table ${tableIndex + 1} has no headers.`);
             console.error(`Table ${tableIndex + 1} has no headers.`);
             return;
         }
@@ -99,6 +109,7 @@ export const extractButterflyTestData = (tabele) => {
         }
 
         if (undershootsIndex === -1) {
+            //errors.push(`'Undershoots' column not found in table ${tableIndex + 1}.`);
             console.log(`'Undershoots' column not found in table ${tableIndex + 1}.`);
             return;
         }
@@ -106,18 +117,21 @@ export const extractButterflyTestData = (tabele) => {
         for (let rowIndex = 1; rowIndex < table.length; rowIndex++) {
             const row = table[rowIndex];
             if (!row || row.length === 0) {
+                errors.push(`Row ${rowIndex} in table ${tableIndex + 1} is empty.`);
                 console.error(`Row ${rowIndex} in table ${tableIndex + 1} is empty.`);
                 continue;
             }
 
             const category = row[0];
             if (!category) {
+                errors.push(`Row ${rowIndex} in table ${tableIndex + 1} does not have a category.`);
                 console.error(`Row ${rowIndex} in table ${tableIndex + 1} does not have a category.`);
                 continue;
             }
 
             const undershootsCellValue = row[undershootsIndex];
             if (!undershootsCellValue) {
+                errors.push(`No value found for 'Undershoots' in row ${rowIndex} of table ${tableIndex + 1}.`);
                 console.error(`No value found for 'Undershoots' in row ${rowIndex} of table ${tableIndex + 1}.`);
                 continue;
             }
@@ -147,6 +161,7 @@ export const extractButterflyTestData = (tabele) => {
         }
 
         if (overshootsIndex === -1) {
+            //errors.push(`'Overshoots' column not found in table ${tableIndex + 1}.`);
             console.log(`'Overshoots' column not found in table ${tableIndex + 1}.`);
             return;
         }
@@ -154,18 +169,21 @@ export const extractButterflyTestData = (tabele) => {
         for (let rowIndex = 1; rowIndex < table.length; rowIndex++) {
             const row = table[rowIndex];
             if (!row || row.length === 0) {
+                errors.push(`Row ${rowIndex} in table ${tableIndex + 1} is empty.`);
                 console.error(`Row ${rowIndex} in table ${tableIndex + 1} is empty.`);
                 continue;
             }
 
             const category = row[0];
             if (!category) {
+                errors.push(`Row ${rowIndex} in table ${tableIndex + 1} does not have a category.`);
                 console.error(`Row ${rowIndex} in table ${tableIndex + 1} does not have a category.`);
                 continue;
             }
 
             const overshootsCellValue = row[overshootsIndex];
             if (!overshootsCellValue) {
+                errors.push(`No value found for 'Overshoots' in row ${rowIndex} of table ${tableIndex + 1}.`);
                 console.error(`No value found for 'Overshoots' in row ${rowIndex} of table ${tableIndex + 1}.`);
                 continue;
             }
@@ -195,6 +213,7 @@ export const extractButterflyTestData = (tabele) => {
         }
 
         if (ToTIndex === -1) {
+            //errors.push(`'TimeonTarget' column not found in table ${tableIndex + 1}.`);
             console.log(`'TimeonTarget' column not found in table ${tableIndex + 1}.`);
             return;
         }
@@ -202,19 +221,22 @@ export const extractButterflyTestData = (tabele) => {
         for (let rowIndex = 1; rowIndex < table.length; rowIndex++) {
             const row = table[rowIndex];
             if (!row || row.length === 0) {
+                errors.push(`Row ${rowIndex} in table ${tableIndex + 1} is empty.`);
                 console.error(`Row ${rowIndex} in table ${tableIndex + 1} is empty.`);
                 continue;
             }
 
             const category = row[0];
             if (!category) {
+                errors.push(`Row ${rowIndex} in table ${tableIndex + 1} does not have a category.`);
                 console.error(`Row ${rowIndex} in table ${tableIndex + 1} does not have a category.`);
                 continue;
             }
 
             const ToTCellValue = row[ToTIndex];
             if (!ToTCellValue) {
-                console.error(`No value found for 'Time on Target' in row ${rowIndex} of table ${tableIndex + 1}.`);
+                errors.push(`No value found for 'Undershoots' in row ${rowIndex} of table ${tableIndex + 1}.`);
+                console.error(`No value found for 'Undershoots' in row ${rowIndex} of table ${tableIndex + 1}.`);
                 continue;
             }
 
@@ -239,5 +261,5 @@ export const extractButterflyTestData = (tabele) => {
     console.log("TOTEM posle punjenja",result.ToT_e_m)
 
     console.log('Extracted Butterfly Test Data:', result);
-    return result;
+    return {result, errors};
 };
