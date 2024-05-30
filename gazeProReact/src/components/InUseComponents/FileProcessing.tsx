@@ -255,8 +255,6 @@ export const FileProcessing = () => {
                 if (errors.length ===0 ){
                     window.electron.ipcRenderer.send('send-table-to-butterfly-model', result);
                 }
-
->>>>>>> 8a7ba3a660b5110590fa6a95927a9753da38b3ea
                 break;
             case 'Head neck relocation test':
                 const extractedData2 = extractHeadNeckTestData(tabele);
