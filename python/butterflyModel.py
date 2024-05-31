@@ -4,6 +4,7 @@ import pickle
 import Orange.data
 import pandas as pd
 
+from ButterflyTestPDF import create_butterfly_pdf
 
 def load_model(model_path):
     with open(model_path, 'rb') as model_file:
@@ -51,6 +52,11 @@ def main():
     input_table = create_orange_table(input_df)
 
     prediction = get_prediction(model, input_table)
+
+    # CREATE BUTTERFLY PDF
+    # Rabim input_data, napoved in ime pacienta
+    
+    #create_butterfly_pdf(input_data, prediction[0], "Boban Boshevski")
 
     print(prediction) # Mislim da lahko brez json.dumps print(json.dumps(predictions))
 

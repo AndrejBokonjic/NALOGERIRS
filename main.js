@@ -78,9 +78,10 @@ ipcMain.on("send-table-to-butterfly-model", (event, tableData) => {
     const pythonProcess = spawn('python', [join(__dirname, './python/butterflyModel.py'), JSON.stringify(tableData)] );
 
     console.log("butterfly tabele: ", tableData);
+    console.log("butterfly tabele: "+ JSON.stringify(tableData));
 
     pythonProcess.stdout.on('data', (data) => {
-        console.log("prediction: "+ data.toString());
+        console.log("prediction: "+ data.toString(), "type of data: ", typeof data);
         event.reply('butterfly-model-response', data.toString()); // mozebi i stringify kje treba
     });
     pythonProcess.stderr.on('data', (data) => {
