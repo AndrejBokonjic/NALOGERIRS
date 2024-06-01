@@ -11,49 +11,52 @@ def clean_cell(cell):
         return cell
     return re.sub(r'\(.*?\)', '', cell).strip()
 
+def is_relevant_row(row):
+    """Determine if the row is relevant based on its content"""
+    irrelevant_keywords = [
+        "Client performance relative to normative range", 
+        "SmoothnessofMovements", 
+        "Movement plots"
+    ]
+    return not any(keyword in str(cell) for cell in row for keyword in irrelevant_keywords)
+
 def extract_text_from_pdf(file_path):
     tables = []
-    excluded_headers = ["SmoothnessofMovements", "Movement plots"]
-
+    
     with pdfplumber.open(file_path) as pdf:
         for page in pdf.pages:
             page_tables = page.extract_tables()
             for table in page_tables:
-                df = pd.DataFrame(table[1:], columns=table[0])
-                df = df.replace({np.nan: None})
-                columns = df.columns.tolist()
-                
-                # Check if the table should be excluded
-                if any(header in columns for header in excluded_headers):
-                    continue
+                if table:  # Ensure the table is not empty
+                    df = pd.DataFrame(table[1:], columns=table[0])
+                    df = df.replace({np.nan: None})
+                    columns = df.columns.tolist()
+                    
+                    # Clean the column headers and table cells
+                    columns = [clean_cell(col) for col in columns]
+                    df = df.applymap(lambda cell: clean_cell(cell) if isinstance(cell, str) else cell)
 
-                # Clean the column headers and table cells
-                columns = [clean_cell(col) for col in columns]
-                df = df.applymap(lambda cell: clean_cell(cell) if isinstance(cell, str) else cell)
+                    # Find the indices of all cells containing the string "2SD"
+                    sd_indices = [(i, j) for i in range(len(df)) for j in range(len(df.columns)) if df.iloc[i, j] == '2SD']
 
-                # Find the indices of all cells containing the string "2SD"
-                sd_indices = [(i, j) for i in range(len(df)) for j in range(len(df.columns)) if df.iloc[i, j] == '2SD']
+                    # Delete cells directly below each "2SD" cell
+                    for i, j in sd_indices:
+                        for k in range(i, len(df)): 
+                            df.iloc[k, j] = None
 
-                # Delete cells directly below each "2SD" cell
-                for i, j in sd_indices:
-                    for k in range(i, len(df)): 
-                        df.iloc[k, j] = None
+                    table_data = [columns]
+                    table_data.extend(df.values.tolist())
 
-                table_data = [columns]
-                table_data.extend(df.values.tolist())
+                    # Filter out irrelevant rows
+                    filtered_table_data = [row for row in table_data if is_relevant_row(row)]
+                    
+                    # Remove rows that contain only "Easy", "Medium", "Difficult" with no other data
+                    filtered_table_data = [row for row in filtered_table_data if not (all(cell in ["Easy", "Medium", "Difficult", None, ""] for cell in row) and any(cell in ["Easy", "Medium", "Difficult"] for cell in row))]
 
-                empty_or_none_cell = 0
-                value_in_cell = 0
-                for row in table_data:
-                    for cell in row:
-                        if cell == "" or cell is None:
-                            empty_or_none_cell += 1
-                        else:
-                            value_in_cell += 1
-
-                if 2*value_in_cell > empty_or_none_cell:
-                    final_table = [row for row in table_data if not all(cell == "" or cell is None for cell in row)]
-                    tables.append(final_table)
+                    # Filter out empty or mostly empty tables
+                    non_empty_rows = [row for row in filtered_table_data if any(cell for cell in row)]
+                    if non_empty_rows:
+                        tables.append(non_empty_rows)
 
     return tables
 
