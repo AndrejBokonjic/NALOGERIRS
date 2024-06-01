@@ -3,5 +3,4 @@
 
 #!pip install Orange3
 
-
-# !pip install PyQt5 - ne treba
+# !pip install PyQt5 - mozda treba

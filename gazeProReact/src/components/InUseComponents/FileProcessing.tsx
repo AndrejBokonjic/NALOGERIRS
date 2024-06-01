@@ -10,6 +10,7 @@ import "reactjs-popup/dist/index.css";
 import {LoadingAnimation} from "./LoadingAnimation.tsx";
 
 import {extractButterflyTestData} from "./ExtractButterflyTestData.tsx";
+import {extractHeadNeckTestData} from "./ExtractHeadNeckTestData.tsx";
 
 
 export const FileProcessing = () => {
@@ -65,12 +66,16 @@ export const FileProcessing = () => {
         window.electron.ipcRenderer.on('butterfly-model-response', (event, data) => {
             // shranimo rezultat napoveda
         })
+        window.electron.ipcRenderer.on('head-neck-model-response', (event, data) => {
+            // shranimo rezultat napoveda
+        })
 
 
         return () => {
             window.electron.ipcRenderer.removeAllListeners("pdf-processed");
             window.electron.ipcRenderer.removeAllListeners("pdf-categorized");
             window.electron.ipcRenderer.removeAllListeners('butterfly-model-response');
+            window.electron.ipcRenderer.removeAllListeners('head-neck-model-response');
         };
     }, []);
 
@@ -226,17 +231,51 @@ export const FileProcessing = () => {
         setFiles((prevFiles) => prevFiles.filter((_, fIndex) => fIndex !== pdfIndex));
     };
 
+    const [pdfErrors, setPdfErrors]
+        = useState<Array<{pdfIndex: number, errors:string[]}>>([]);
+
     const handleDobiSporocilo = (pdfIndex) => {
         const tabele = pdfTexts[pdfIndex];
-    
+
+        let result, errors:string[];
+
         switch (pdfCategories[pdfIndex]) {
             case 'Butterfly test':
-                const extractedData = extractButterflyTestData(tabele);
-                console.log('POSLJI V BUTTEFLY TEST', extractedData);
-                window.electron.ipcRenderer.send('send-table-to-butterfly-model', extractedData);
+                ({result, errors} = extractButterflyTestData(tabele));
+                console.log('POSLJI V BUTTEFLY TEST', result);
+                console.log("NAPAKE: ", errors);
+
+                setPdfErrors(prevPdfErrors => {
+                    const updatedPdfErrors =
+                        prevPdfErrors.filter(errorObject => errorObject.pdfIndex !== pdfIndex);
+                    if (errors.length >0){
+                        updatedPdfErrors.push({pdfIndex, errors});
+                    }
+                    return updatedPdfErrors;
+                });
+
+                if (errors.length ===0 ){
+                    window.electron.ipcRenderer.send('send-table-to-butterfly-model', result);
+                }
                 break;
             case 'Head neck relocation test':
-                console.log("poslji v head back...");
+
+                ({result, errors} = extractHeadNeckTestData(tabele));
+
+                setPdfErrors(prevPdfErrors => {
+                    const updatedPdfErrors =
+                        prevPdfErrors.filter(errorObject => errorObject.pdfIndex !== pdfIndex);
+                    if (errors.length >0){
+                        updatedPdfErrors.push({pdfIndex, errors});
+                    }
+                    return updatedPdfErrors;
+                });
+
+                if (errors.length === 0){
+                    console.log('POSLJI V HEAD-NECK TEST', result);
+                    window.electron.ipcRenderer.send('send-table-to-head-neck-model', result);
+                }
+
                 break;
             case 'Range of motion':
                 console.log("posji range of motion");
@@ -248,8 +287,6 @@ export const FileProcessing = () => {
     return (
         <>
             <FilesUpload onAddFiles={handleChangeOnFilesUpload} />
-
-
 
 
             {pdfTexts.map((file, index) => (
@@ -392,18 +429,18 @@ export const FileProcessing = () => {
                     <button
                         onClick={() => handleCreateTableClick(pdfIndex)}
                         type="button"
-                        className="text-gray-300  hover:text-white border border-gray-500 hover:bg-gray-900
+                        className="text-gray-400  hover:text-white border border-gray-500 hover:bg-gray-900
                         font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-500
                          dark:hover:text-white dark:hover:bg-gray-600 "
                     >
-                        Ustvari tabelo
+                        Manual input
                     </button>
 
                     <button type="button" onClick={() => handleDobiSporocilo(pdfIndex)}
                             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none
                              focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex
                               items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        Dobi sporočilo
+                        Forward to analysis
                         <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true"
                              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
@@ -411,6 +448,25 @@ export const FileProcessing = () => {
                         </svg>
                     </button>
                     </div>
+
+                    {/*{pdfErrors[pdfIndex].pdfIndex == pdfIndex && (*/}
+                    {/*    pdfErrors[pdfIndex].errors.map(error => {*/}
+                    {/*        <p>{error}</p>*/}
+                    {/*    })*/}
+                    {/*)}*/}
+                    {pdfErrors
+                        .filter(errorObject => errorObject.pdfIndex === pdfIndex)
+                        .map((errorObject, errorIndex) => (
+                        <div key={errorIndex}>
+                            <h2 className="font-bold text-red-500 text-lg mb-2">Popravite naslednje napake v tabeli, preden poskusite znova: </h2>
+                            {errorObject.errors.map((error, errorIndex) => (
+                                    <p key={errorIndex}>{error}</p>
+                                ))}
+                            <br/>
+                        </div>
+
+                    ))}
+
 
 
                 </div>
