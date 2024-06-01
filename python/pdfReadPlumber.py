@@ -51,7 +51,16 @@ def extract_text_from_pdf(file_path):
                     for k in range(i, len(df)): 
                         df.iloc[k, j] = None
 
-                table_data = [columns]
+                # Delete rows with None values in '2SD' columns
+                for i, j in sd_indices:
+                    for k in range(i, len(df)): 
+                        df.iloc[k, j] = None
+
+                # Drop rows and columns where all values are None
+                df.dropna(axis=0, how='all', inplace=True)
+                df.dropna(axis=1, how='all', inplace=True)
+
+                table_data = [df.columns.tolist()]
                 table_data.extend(df.values.tolist())
 
                 empty_or_none_cell = 0
