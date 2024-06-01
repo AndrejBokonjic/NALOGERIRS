@@ -13,6 +13,7 @@ import {extractButterflyTestData} from "./ExtractButterflyTestData.tsx";
 import {extractHeadNeckTestData} from "./ExtractHeadNeckTestData.tsx";
 
 
+
 export const FileProcessing = () => {
     const [files, setFiles] = useState<File[]>([]);
     const [pdfTexts, setPdfTexts] = useState<Array[]>([]);
@@ -53,6 +54,8 @@ export const FileProcessing = () => {
         });
     };
 
+
+    const [pdfData, setPdfData] = useState(null);
     useEffect(() => {
         //pridobimo tabele iz pdf
         window.electron.ipcRenderer.on("pdf-processed", (event, data) => {
@@ -65,6 +68,8 @@ export const FileProcessing = () => {
         // pridobimo rezultate (napoved) butterfly modela
         window.electron.ipcRenderer.on('butterfly-model-response', (event, data) => {
             // shranimo rezultat napoveda
+            setPdfData(data);
+
         })
         window.electron.ipcRenderer.on('head-neck-model-response', (event, data) => {
             // shranimo rezultat napoveda
@@ -191,7 +196,6 @@ export const FileProcessing = () => {
     };
 
 
-
     const handleRemoveTable = (pdfIndex, tableIndex) => {
         setPdfTexts((prevPdfTexts) => {
             const updatedPdfTexts = prevPdfTexts.map((pdf, pIndex) =>
@@ -234,7 +238,16 @@ export const FileProcessing = () => {
     const [pdfErrors, setPdfErrors]
         = useState<Array<{pdfIndex: number, errors:string[]}>>([]);
 
-    const handleDobiSporocilo = (pdfIndex) => {
+    const handleSavePDF = async (pdfIndex) => {
+        const filePathToSave = await window.electron.ipcRenderer.invoke('show-save-dialog');
+
+        console.log("Pot kje se naj shrani pdf: "+ filePathToSave);
+
+        if (filePathToSave) {
+            handleDobiSporocilo(pdfIndex, filePathToSave);
+        }
+    };
+    const handleDobiSporocilo = (pdfIndex, filePathToSave) => {
         const tabele = pdfTexts[pdfIndex];
 
         let result, errors:string[];
@@ -255,11 +268,15 @@ export const FileProcessing = () => {
                 });
 
                 if (errors.length ===0 ){
-                    window.electron.ipcRenderer.send('send-table-to-butterfly-model', result);
+                    const dataToButterflyModel ={
+                        "results": result,
+                        "filePathToSave": filePathToSave
+                    }
+                    window.electron.ipcRenderer.send('send-table-to-butterfly-model', dataToButterflyModel);
                 }
                 break;
-            case 'Head neck relocation test':
 
+            case 'Head neck relocation test':
                 ({result, errors} = extractHeadNeckTestData(tabele));
 
                 setPdfErrors(prevPdfErrors => {
@@ -270,30 +287,21 @@ export const FileProcessing = () => {
                     }
                     return updatedPdfErrors;
                 });
-
                 if (errors.length === 0){
                     console.log('POSLJI V HEAD-NECK TEST', result);
                     window.electron.ipcRenderer.send('send-table-to-head-neck-model', result);
                 }
-
                 break;
+
             case 'Range of motion':
                 console.log("posji range of motion");
                 break;
         }
     };
 
-
     return (
         <>
             <FilesUpload onAddFiles={handleChangeOnFilesUpload} />
-
-
-            {pdfTexts.map((file, index) => (
-                <div key={index}></div>
-            ))}
-
-
 
             {files.length !== pdfTexts.length ? (
                 <LoadingAnimation/>
@@ -436,11 +444,11 @@ export const FileProcessing = () => {
                         Manual input
                     </button>
 
-                    <button type="button" onClick={() => handleDobiSporocilo(pdfIndex)}
+                    <button type="button" onClick={() => handleSavePDF(pdfIndex)}
                             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none
                              focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex
                               items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        Forward to analysis
+                        Forward to analysis & save results
                         <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true"
                              xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
                             <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
@@ -449,11 +457,6 @@ export const FileProcessing = () => {
                     </button>
                     </div>
 
-                    {/*{pdfErrors[pdfIndex].pdfIndex == pdfIndex && (*/}
-                    {/*    pdfErrors[pdfIndex].errors.map(error => {*/}
-                    {/*        <p>{error}</p>*/}
-                    {/*    })*/}
-                    {/*)}*/}
                     {pdfErrors
                         .filter(errorObject => errorObject.pdfIndex === pdfIndex)
                         .map((errorObject, errorIndex) => (
@@ -466,7 +469,6 @@ export const FileProcessing = () => {
                         </div>
 
                     ))}
-
 
 
                 </div>

@@ -44,6 +44,7 @@ def get_prediction(model, input_table):
 
 def main():
     input_data = sys.argv[1]
+    filePathToSave = sys.argv[2]
 
     model = load_model("python/MLmodels/ModelButterflyTest.pkcls")
 
@@ -55,11 +56,11 @@ def main():
 
     # CREATE BUTTERFLY PDF
     # Rabim input_data, napoved in ime pacienta
-    
-    #create_butterfly_pdf(input_data, prediction[0], "Boban Boshevski")
+    pdf_base64_string = create_butterfly_pdf(input_data, prediction[0], "Boban Boshevski", filePathToSave)
 
-    print(prediction) # Mislim da lahko brez json.dumps print(json.dumps(predictions))
+    #print(prediction) # Mislim da lahko brez json.dumps print(json.dumps(predictions))
 
+    print(pdf_base64_string)
 
 
 if __name__ == '__main__':

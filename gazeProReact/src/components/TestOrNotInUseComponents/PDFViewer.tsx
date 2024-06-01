@@ -8,7 +8,7 @@ import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 // @ts-ignore
-export const PDFViewer = ({ file }) => {
+export const PDFViewer = () => {
     const [numPages, setNumPages] = useState(null);
 
 

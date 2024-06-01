@@ -4,8 +4,11 @@ import matplotlib.pyplot as plt
 from math import pi
 from matplotlib.backends.backend_pdf import PdfPages
 
+import base64
+from io import BytesIO
 
-def create_butterfly_pdf(table_data, prediction, pacient_name):
+
+def create_butterfly_pdf(table_data, prediction, pacient_name, filePathToSave):
     # dobimo podatke
     parsed_table_data = json.loads(table_data)
     labels = list(parsed_table_data.keys())
@@ -42,9 +45,10 @@ def create_butterfly_pdf(table_data, prediction, pacient_name):
     plt.axis('off')
     plt.text(0.5, 0.5, text_based_on_cluster_prediction(prediction), ha='center', va='center', size=12, wrap=True)
 
-    with PdfPages('output.pdf') as pdf:
+    with PdfPages(filePathToSave) as pdf:
         pdf.savefig(fig)
 
+    return pdf_base64
 
 def text_based_on_cluster_prediction(prediction):
 

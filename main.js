@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog } = require('electron');
 const {format} = require("url");
 
 const electronReload = require("electron-reload");
@@ -73,26 +73,26 @@ ipcMain.on('categorize-pdf', (event, filePath) => {
     });
 });
 
-ipcMain.on("send-table-to-butterfly-model", (event, tableData) => {
+ipcMain.on("send-table-to-butterfly-model", (event, dataToButterflyModel) => {
 
-    const pythonProcess = spawn('python', [join(__dirname, './python/butterflyModel.py'), JSON.stringify(tableData)] );
-
-    console.log("butterfly tabele: ", tableData);
-    console.log("butterfly tabele: "+ JSON.stringify(tableData));
+    const pythonProcess = spawn('python', [join(__dirname, './python/butterflyModel.py'),
+        JSON.stringify(dataToButterflyModel.results), dataToButterflyModel.filePathToSave] );
 
     pythonProcess.stdout.on('data', (data) => {
-        console.log("prediction: "+ data.toString(), "type of data: ", typeof data);
+        //console.log("prediction: "+ data, "type of data: ", typeof data);
         event.reply('butterfly-model-response', data.toString()); // mozebi i stringify kje treba
     });
+
+
     pythonProcess.stderr.on('data', (data) => {
        console.error('stderr: ', data.toString());
     });
     pythonProcess.on('close', (code) => {
         console.log('child process exited with code ', code);
-    })
+    });
 });
 
-ipcMain.on("send-table-to-head-neck-model", (event, tableData) => {
+ipcMain.on("send-table-to-head-neck-model", (event, {tableData}) => {
 
     const pythonProcess = spawn('python', [join(__dirname, './python/headneckModel.py'), JSON.stringify(tableData)] );
 
@@ -109,3 +109,14 @@ ipcMain.on("send-table-to-head-neck-model", (event, tableData) => {
         console.log('child process exited with code ', code);
     });
 });
+
+ipcMain.handle('show-save-dialog', async (event) => {
+    const result = await dialog.showSaveDialog({
+        title: 'Save PDF',
+        defaultPath: 'results.pdf',
+        filters: [{ name: 'PDF Files', extensions: ['pdf'] }],
+    });
+    return result.filePath;
+});
+
+
