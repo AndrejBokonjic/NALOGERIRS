@@ -48,7 +48,6 @@ def create_butterfly_pdf(table_data, prediction, pacient_name, filePathToSave):
     with PdfPages(filePathToSave) as pdf:
         pdf.savefig(fig)
 
-    return pdf_base64
 
 def text_based_on_cluster_prediction(prediction):
 
