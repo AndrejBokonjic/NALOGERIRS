@@ -16,7 +16,8 @@ export const extractHeadNeckTestData = (tabele) => {
 
     const errors:string[]=[];
 
-    console.log("HNRTCERRB pre punjenja", result.HNRT_Cerr_b);
+    console.log("HNRTCERRB pre punenja", result.HNRT_Cerr_b);
+
 
     tabele.forEach((table, tableIndex) => {
         if (!table || table.length === 0) {
@@ -25,7 +26,10 @@ export const extractHeadNeckTestData = (tabele) => {
             return;
         }
 
+        const firstRow = table[0];
         const headers = table[0];
+        const tableName = headers[0] || `Table ${tableIndex + 1}`;
+
         console.log("headers prva provera", headers);
         if (!headers || headers.length === 0) {
             errors.push(`Table ${tableIndex + 1} has no headers.`);
@@ -48,18 +52,18 @@ export const extractHeadNeckTestData = (tabele) => {
                 console.error(`Row ${rowIndex} in table ${tableIndex + 1} is empty.`);
                 continue;
             }
-
+            const columnName = firstRow[absoluteIndex];
             const category = row[0];
             if (!category) {
-                errors.push(`Row ${rowIndex} in table ${tableIndex + 1} does not have a category.`);
-                console.error(`Row ${rowIndex} in table ${tableIndex + 1} does not have a category.`);
+                errors.push(`Empty cell found in table '${tableName}', in column '${columnName}' and row '${category}'. Please make sure that all cells have values before forwarding data to analysis`);
+                console.error(`Empty cell found in table '${tableName}', in column '${columnName}' and row '${category}'. Please make sure that all cells have values before forwarding data to analysis`);
                 continue;
             }
 
             const absoluteCellValue = row[absoluteIndex];
-            if (absoluteCellValue === undefined || absoluteCellValue === null) {
-                errors.push(`No value found for 'Absolute error' in row ${rowIndex} of table ${tableIndex + 1}.`);
-                console.error(`No value found for 'Absolute error' in row ${rowIndex} of table ${tableIndex + 1}.`);
+            if (!absoluteCellValue) {
+                errors.push(`Empty cell found in table '${tableName}', in column '${columnName}' and row '${category}'. Please make sure that all cells have values before forwarding data to analysis`);
+                console.error(`Empty cell found in table '${tableName}', in column '${columnName}' and row '${category}'. Please make sure that all cells have values before forwarding data to analysis`);
                 continue;
             }
 
@@ -91,7 +95,9 @@ export const extractHeadNeckTestData = (tabele) => {
             return;
         }
 
+        const firstRow = table[0];
         const headers = table[0];
+        const tableName = headers[0] || `Table ${tableIndex + 1}`;
         console.log("headers prva provera",headers)
         if (!headers || headers.length === 0) {
             errors.push(`Table ${tableIndex + 1} has no headers.`);
@@ -100,7 +106,7 @@ export const extractHeadNeckTestData = (tabele) => {
         }
 
         let constantIndex = headers.indexOf('ConstantError°');
-
+        const columnName = firstRow[constantIndex];
         if (constantIndex === -1 && table.length > 1) {
             const nextRowHeaders = table[1];
             constantIndex = nextRowHeaders.indexOf('ConstantError°');
@@ -128,8 +134,8 @@ export const extractHeadNeckTestData = (tabele) => {
 
             const constantCellValue = row[constantIndex];
             if (!constantCellValue) {
-                errors.push(`No value found for 'Constant error' in row ${rowIndex} of table ${tableIndex + 1}.`);
-                console.error(`No value found for 'Constant error' in row ${rowIndex} of table ${tableIndex + 1}.`);
+                errors.push(`Empty cell found in table '${tableName}', in column '${columnName}' and row '${category}'. Please make sure that all cells have values before forwarding data to analysis`);
+                console.error(`Empty cell found in table '${tableName}', in column '${columnName}' and row '${category}'. Please make sure that all cells have values before forwarding data to analysis`);
                 continue;
             }
 
@@ -153,14 +159,13 @@ export const extractHeadNeckTestData = (tabele) => {
             }
         }
         let variableIndex = headers.indexOf('VariableError°');
-
         if (variableIndex === -1 && table.length > 1) {
             const nextRowHeaders = table[1];
             variableIndex = nextRowHeaders.indexOf('VariableError°');
         }
-
+        const columnName2 = firstRow[variableIndex];
         if (variableIndex === -1) {
-            console.log(`'Overshoots' column not found in table ${tableIndex + 1}.`);
+            console.log(`'VariableError' column not found in table ${tableIndex + 1}.`);
             return;
         }
 
@@ -181,8 +186,8 @@ export const extractHeadNeckTestData = (tabele) => {
 
             const variableCellValue = row[variableIndex];
             if (!variableCellValue) {
-                errors.push(`No value found for 'Variable Error' in row ${rowIndex} of table ${tableIndex + 1}.`);
-                console.error(`No value found for 'Variable Error' in row ${rowIndex} of table ${tableIndex + 1}.`);
+                errors.push(`Empty cell found in table '${tableName}', in column '${columnName2}' and row '${category}'. Please make sure that all cells have values before forwarding data to analysis`);
+                console.error(`Empty cell found in table '${tableName}', in column '${columnName2}' and row '${category}'. Please make sure that all cells have values before forwarding data to analysis`);
                 continue;
             }
 

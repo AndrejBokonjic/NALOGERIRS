@@ -461,7 +461,7 @@ export const FileProcessing = () => {
                         .filter(errorObject => errorObject.pdfIndex === pdfIndex)
                         .map((errorObject, errorIndex) => (
                         <div key={errorIndex}>
-                            <h2 className="font-bold text-red-500 text-lg mb-2">Popravite naslednje napake v tabeli, preden poskusite znova: </h2>
+                            <h2 className="font-bold text-red-500 text-lg mb-2">Please fix the following errors before trying again: </h2>
                             {errorObject.errors.map((error, errorIndex) => (
                                     <p key={errorIndex}>{error}</p>
                                 ))}
