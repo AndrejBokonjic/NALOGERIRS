@@ -37,7 +37,7 @@ export const extractHeadNeckTestData = (tabele) => {
             return;
         }
 
-        const absoluteIndex = headers.indexOf('AbsoluteError°');
+        const absoluteIndex = headers.indexOf('AbsoluteError°(2SD)');
         console.log("headers:", headers);
 
         if (absoluteIndex === -1) {
@@ -105,7 +105,7 @@ export const extractHeadNeckTestData = (tabele) => {
             return;
         }
 
-        let constantIndex = headers.indexOf('ConstantError°');
+        let constantIndex = headers.indexOf('ConstantError°(2SD)');
         const columnName = firstRow[constantIndex];
         if (constantIndex === -1 && table.length > 1) {
             const nextRowHeaders = table[1];
@@ -158,7 +158,7 @@ export const extractHeadNeckTestData = (tabele) => {
                     console.log(`Unknown category: ${category}`);
             }
         }
-        let variableIndex = headers.indexOf('VariableError°');
+        let variableIndex = headers.indexOf('VariableError°(2SD)');
         if (variableIndex === -1 && table.length > 1) {
             const nextRowHeaders = table[1];
             variableIndex = nextRowHeaders.indexOf('VariableError°');

@@ -255,6 +255,8 @@ export const FileProcessing = () => {
     const handleDobiSporocilo = async (pdfIndex) => {
         const tabele = pdfTexts[pdfIndex];
 
+
+
         let result, errors:string[];
 
         switch (pdfCategories[pdfIndex]) {
@@ -283,8 +285,9 @@ export const FileProcessing = () => {
                 break;
 
             case 'Head neck relocation test':
-                ({result, errors} = extractHeadNeckTestData(tabele));
 
+                console.log('Tabele za heand neck test: ', tabele );
+                ({result, errors} = extractHeadNeckTestData(tabele));
                 setPdfErrors(prevPdfErrors => {
                     const updatedPdfErrors =
                         prevPdfErrors.filter(errorObject => errorObject.pdfIndex !== pdfIndex);
@@ -294,8 +297,17 @@ export const FileProcessing = () => {
                     return updatedPdfErrors;
                 });
                 if (errors.length === 0){
+
+                    const filePathToSave = await handleSavePDF(pdfIndex)
+                    const dataToHeadNeckRelocationModel = {
+                        "results": result,
+                        "filePathToSave": filePathToSave
+                    }
+
+                    console.log('filePathToSave head neck : ', filePathToSave)
+
                     console.log('POSLJI V HEAD-NECK TEST', result);
-                    window.electron.ipcRenderer.send('send-table-to-head-neck-model', result);
+                    window.electron.ipcRenderer.send('send-table-to-head-neck-model', dataToHeadNeckRelocationModel);
                 }
                 break;
 

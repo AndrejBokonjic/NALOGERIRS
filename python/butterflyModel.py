@@ -4,7 +4,7 @@ import pickle
 import Orange.data
 import pandas as pd
 
-from ButterflyTestPDF import create_butterfly_pdf
+from GeneratePDFforTest import create_pdf_for_the_test
 
 def load_model(model_path):
     with open(model_path, 'rb') as model_file:
@@ -56,12 +56,9 @@ def main():
 
     # CREATE BUTTERFLY PDF
     # Rabim input_data, napoved in ime pacienta
-    pdf_base64_string = create_butterfly_pdf(input_data, prediction[0], "Boban Boshevski", filePathToSave)
+    create_pdf_for_the_test(input_data, prediction[0], "Boban Boshevski", filePathToSave)
 
     #print(prediction) # Mislim da lahko brez json.dumps print(json.dumps(predictions))
-
-    print(pdf_base64_string)
-
 
 if __name__ == '__main__':
     main()

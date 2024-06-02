@@ -93,11 +93,12 @@ ipcMain.on("send-table-to-butterfly-model", (event, dataToButterflyModel) => {
     });
 });
 
-ipcMain.on("send-table-to-head-neck-model", (event, {tableData}) => {
+ipcMain.on("send-table-to-head-neck-model", (event, dataToHeadNeckRelocationModel) => {
 
-    const pythonProcess = spawn('python', [join(__dirname, './python/headneckModel.py'), JSON.stringify(tableData)] );
+    const pythonProcess = spawn('python', [join(__dirname, './python/headneckModel.py'),
+        JSON.stringify(dataToHeadNeckRelocationModel.results), dataToHeadNeckRelocationModel.filePathToSave] );
 
-    console.log("head-neck tabele: ", tableData);
+    console.log("head-neck tabele: ", JSON.stringify(dataToHeadNeckRelocationModel.result));
 
     pythonProcess.stdout.on('data', (data) => {
         console.log("prediction: "+ data.toString());

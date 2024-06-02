@@ -4,6 +4,7 @@ import pickle
 import Orange.data
 import pandas as pd
 
+from GeneratePDFforTest import create_pdf_for_the_test
 
 def load_model(model_path):
     with open(model_path, 'rb') as model_file:
@@ -28,6 +29,7 @@ def get_prediction(model, input_table):
 
 def main():
     input_data = sys.argv[1]
+    filePathToSave = sys.argv[2]
 
     model = load_model("python/MLmodels/ModelHeadNeckRelocationTest.pkcls")
 
@@ -36,6 +38,8 @@ def main():
     input_table = create_orange_table(input_df)
 
     prediction = get_prediction(model, input_table)
+
+    create_pdf_for_the_test(input_data, prediction[0], "Boban Boshevski", filePathToSave)
 
     print(prediction) # Mislim da lahko brez json.dumps print(json.dumps(predictions))
 
