@@ -17,7 +17,10 @@ import {extractHeadNeckTestData} from "./ExtractHeadNeckTestData.tsx";
 export const FileProcessing = () => {
     const [files, setFiles] = useState<File[]>([]);
     const [pdfTexts, setPdfTexts] = useState<Array[]>([]);
+
     const [pdfCategories, setPdfCategories] = useState<string[]>([]);
+    const [patientName, setPatientName] = useState<string[]>([]);
+
     const [editingCell, setEditingCell] = useState<{
         pdfIndex: number;
         tableIndex: number;
@@ -36,6 +39,7 @@ export const FileProcessing = () => {
         rowIndex: number;
     } | null>(null);
     const [showInsertTable, setShowInsertTable] = useState(false);
+
     const [contextMenuVisible, setContextMenuVisible] = useState<{
         visible: boolean;
         pdfIndex: number | null;
@@ -44,27 +48,35 @@ export const FileProcessing = () => {
         y: number;
     }>({ visible: false, pdfIndex: null, tableIndex: null, x: 0, y: 0 });
 
+
+
     const handleChangeOnFilesUpload = (filesUpload: File[]) => {
         setFiles((prevFiles) => [...prevFiles, ...filesUpload]);
 
         filesUpload.forEach((file) => {
             const filePath = file.path;
             window.electron.ipcRenderer.send("process-pdf", filePath);
-            window.electron.ipcRenderer.send("categorize-pdf", filePath);
+            window.electron.ipcRenderer.send("pdf-model-type-and-patient-name", filePath);
         });
     };
 
 
-    const [pdfData, setPdfData] = useState(null);
+    //const [pdfData, setPdfData] = useState(null);
     useEffect(() => {
         //pridobimo tabele iz pdf
         window.electron.ipcRenderer.on("pdf-processed", (event, data) => {
             setPdfTexts((prevTexts) => [...prevTexts, data]);
         });
         // pridobimo imena pdf
-        window.electron.ipcRenderer.on("pdf-categorized", (event, data) => {
-            setPdfCategories((prevCategories) => [...prevCategories, data]);
+        window.electron.ipcRenderer.on("pdf-categorized-and-patient-name", (event, data) => {
+
+            const {category, patient_name} = data;
+
+            setPdfCategories((prevCategories) => [...prevCategories, category]);
+            setPatientName(prevPatientName => [...prevPatientName, patient_name]);
         });
+
+        /*
         // pridobimo rezultate (napoved) butterfly modela
         window.electron.ipcRenderer.on('butterfly-model-response', (event, data) => {
             // shranimo rezultat napoveda
@@ -73,12 +85,12 @@ export const FileProcessing = () => {
         })
         window.electron.ipcRenderer.on('head-neck-model-response', (event, data) => {
             // shranimo rezultat napoveda
-        })
+        })*/
 
 
         return () => {
             window.electron.ipcRenderer.removeAllListeners("pdf-processed");
-            window.electron.ipcRenderer.removeAllListeners("pdf-categorized");
+            window.electron.ipcRenderer.removeAllListeners("pdf-categorized-and-patient-name");
             window.electron.ipcRenderer.removeAllListeners('butterfly-model-response');
             window.electron.ipcRenderer.removeAllListeners('head-neck-model-response');
         };
@@ -232,6 +244,8 @@ export const FileProcessing = () => {
         setPdfTexts((prevPdfTexts) => prevPdfTexts.filter((_, pIndex) => pIndex !== pdfIndex));
         setPdfCategories((prevCategories) => prevCategories.filter((_, cIndex) => cIndex !== pdfIndex));
 
+        setPatientName((prevPatientName) => prevPatientName.filter((_, pIndex) => pIndex !== pdfIndex));
+
         setFiles((prevFiles) => prevFiles.filter((_, fIndex) => fIndex !== pdfIndex));
     };
 
@@ -276,6 +290,7 @@ export const FileProcessing = () => {
                     const filePathToSave = await handleSavePDF(pdfIndex)
                     const dataToButterflyModel ={
                         "results": result,
+                        "patient_name": patientName[pdfIndex],
                         "filePathToSave": filePathToSave
                     }
                     window.electron.ipcRenderer.send('send-table-to-butterfly-model', dataToButterflyModel);
@@ -283,8 +298,9 @@ export const FileProcessing = () => {
                 break;
 
             case 'Head neck relocation test':
-                ({result, errors} = extractHeadNeckTestData(tabele));
 
+                console.log('Tabele za heand neck test: ', tabele );
+                ({result, errors} = extractHeadNeckTestData(tabele));
                 setPdfErrors(prevPdfErrors => {
                     const updatedPdfErrors =
                         prevPdfErrors.filter(errorObject => errorObject.pdfIndex !== pdfIndex);
@@ -294,8 +310,18 @@ export const FileProcessing = () => {
                     return updatedPdfErrors;
                 });
                 if (errors.length === 0){
+
+                    const filePathToSave = await handleSavePDF(pdfIndex)
+                    const dataToHeadNeckRelocationModel = {
+                        "results": result,
+                        "patient_name": patientName[pdfIndex],
+                        "filePathToSave": filePathToSave
+                    }
+
+                    console.log('filePathToSave head neck : ', filePathToSave)
+
                     console.log('POSLJI V HEAD-NECK TEST', result);
-                    window.electron.ipcRenderer.send('send-table-to-head-neck-model', result);
+                    window.electron.ipcRenderer.send('send-table-to-head-neck-model', dataToHeadNeckRelocationModel);
                 }
                 break;
 
@@ -315,12 +341,15 @@ export const FileProcessing = () => {
             <div>
             {pdfTexts.map((pdf, pdfIndex) => (
                 <div key={pdfIndex}>
-                    <h3>
+                    <h3 className="font-bold">
+
                         {pdfIndex + 1} PDF name: {pdfCategories[pdfIndex]}
                         <button onClick={() => handleDeletePdf(pdfIndex)} className="bg-red-700 text-sm ml-2">
                             <MdDelete className="text-white h-4 w-4"/>
                         </button>
                     </h3>
+                    <h4>Patient name: {patientName[pdfIndex]}</h4>
+
                     {pdf.map((table, tableIndex) => (
                         <div
                             key={tableIndex}

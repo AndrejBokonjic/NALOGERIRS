@@ -4,11 +4,12 @@ import matplotlib.pyplot as plt
 from math import pi
 from matplotlib.backends.backend_pdf import PdfPages
 
-import base64
-from io import BytesIO
 
 
-def create_butterfly_pdf(table_data, prediction, pacient_name, filePathToSave):
+
+def create_pdf_for_the_test(table_data, prediction, pacient_name, filePathToSave):
+
+
     # dobimo podatke
     parsed_table_data = json.loads(table_data)
     labels = list(parsed_table_data.keys())
@@ -21,7 +22,10 @@ def create_butterfly_pdf(table_data, prediction, pacient_name, filePathToSave):
 
     fig = plt.figure(figsize=(8.27, 11.69))
 
-    fig.text(0.5, 0.95, "Results from the Butterfly test", ha="center", va="center", size=16)
+    if labels == ['ToT_e_m', 'ToT_m_m', 'ToT_d_m', 'Und_e_m', 'Und_m_m', 'Und_d_m', 'Over_e_m', 'Over_m_m', 'Over_d_m', 'AA_e_m', 'AA_m_m', 'AA_d_m']:
+        fig.text(0.5, 0.95, "Results from the Butterfly test", ha="center", va="center", size=16)
+    elif labels == ['HNRT_Aerr_l', 'HNRT_Cerr_l', 'HNRT_Verr_l', 'HNRT_Aerr_r', 'HNRT_Cerr_r', 'HNRT_Verr_r', 'HNRT_Aerr_f', 'HNRT_Cerr_f', 'HNRT_Verr_f', 'HNRT_Aerr_b', 'HNRT_Cerr_b', 'HNRT_Verr_b']:
+        fig.text(0.5, 0.95, "Results from the Head-Neck Relocation test", ha="center", va="center", size=16)
 
     ax = plt.subplot2grid((6, 1), (1, 0), rowspan=3, polar=True)
     ax.plot(angles_for_labels, data, linewidth=2, linestyle='dashed')
@@ -33,9 +37,18 @@ def create_butterfly_pdf(table_data, prediction, pacient_name, filePathToSave):
     plt.xticks(angles_for_labels[:-1], labels, color='grey', size=10)
 
 
+    min_value = min(data)
     max_value = max(data)
-    step = max_value /8
-    yticks = np.arange( 0 , max_value+ step, step)
+
+    if (min_value < 0):
+        step = (max_value - min_value) / 8
+        yticks = np.arange(min_value, max_value + step, step)
+    else:
+        step = max_value /8
+        yticks = np.arange(0, max_value + step, step)
+
+    #yticks = np.arange( 0 , max_value+ step, step)
+
     ytick_labels = [str(int(y)) for y in yticks]
 
     # kot za prikaz vrednosti (10,20,30,40,...)
@@ -46,20 +59,25 @@ def create_butterfly_pdf(table_data, prediction, pacient_name, filePathToSave):
 
     # range of values
     #plt.ylim(0, 80)
-    plt.ylim(0, max_value+step)
+    #plt.ylim(0, max_value+step)
+    plt.ylim(min_value - step, max_value + step)
 
     for i in range(number_labels):
         ax.plot(angles_for_labels[i], data[i], 'o', color='blue')
 
     plt.subplot2grid((6, 1), (5, 0))
     plt.axis('off')
-    plt.text(0.5, 0.5, text_based_on_cluster_prediction(prediction), ha='center', va='center', size=12, wrap=True)
+
+    if labels == ['ToT_e_m', 'ToT_m_m', 'ToT_d_m', 'Und_e_m', 'Und_m_m', 'Und_d_m', 'Over_e_m', 'Over_m_m', 'Over_d_m', 'AA_e_m', 'AA_m_m', 'AA_d_m']:
+        plt.text(0.5, 0.5, text_based_on_cluster_prediction_butterfly_model(prediction), ha='center', va='center', size=12, wrap=True)
+    elif labels == ['HNRT_Aerr_l', 'HNRT_Cerr_l', 'HNRT_Verr_l', 'HNRT_Aerr_r', 'HNRT_Cerr_r', 'HNRT_Verr_r', 'HNRT_Aerr_f', 'HNRT_Cerr_f', 'HNRT_Verr_f', 'HNRT_Aerr_b', 'HNRT_Cerr_b', 'HNRT_Verr_b']:
+        plt.text(0.5, 0.5, "VSTAVI TEKST GLEDE NAPOVED {}".format(prediction ), ha='center', va='center', size=12, wrap=True)
 
     with PdfPages(filePathToSave) as pdf:
         pdf.savefig(fig)
 
 
-def text_based_on_cluster_prediction(prediction):
+def text_based_on_cluster_prediction_butterfly_model(prediction):
 
     switcher = {
         # cluster 1

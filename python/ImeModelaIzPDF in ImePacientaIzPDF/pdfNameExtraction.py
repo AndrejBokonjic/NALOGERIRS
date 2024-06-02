@@ -44,15 +44,17 @@ def extract_near_keywords_from_pdf(file_path):
                     extracted_texts.append({"Keyword": "Client", "Text": client_text})
     return extracted_texts
 
-
-if __name__ == "__main__":
-    file_path = r'C:\Users\Admin\Desktop\Butterfly Test_2.pdf'
+def get_patient_name (pdf_path):
     try:
-        extracted_texts = extract_near_keywords_from_pdf(file_path)
+        extracted_texts = extract_near_keywords_from_pdf(pdf_path)
         if extracted_texts:
             for text_info in extracted_texts:
-                print(f"{text_info['Keyword']}: {text_info['Text']}")
+                return text_info['Text']
+                #print(f"{text_info['Keyword']}: {text_info['Text']}")
         else:
             print("No relevant text found.")
     except Exception as e:
         print(f"Error: {str(e)}")
+
+
+
