@@ -1,9 +1,10 @@
-const { app, BrowserWindow, ipcMain, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const {format} = require("url");
 
 const electronReload = require("electron-reload");
 const { spawn } = require('child_process');
 const {join} = require("path");
+const path = require("path");
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -118,5 +119,10 @@ ipcMain.handle('show-save-dialog', async (event) => {
     });
     return result.filePath;
 });
+
+ipcMain.handle('open-folder', async (event, filePath) => {
+    const folderPath = path.dirname(filePath);
+    shell.openPath(folderPath);
+})
 
 

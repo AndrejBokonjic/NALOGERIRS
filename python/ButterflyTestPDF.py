@@ -32,11 +32,21 @@ def create_butterfly_pdf(table_data, prediction, pacient_name, filePathToSave):
 
     plt.xticks(angles_for_labels[:-1], labels, color='grey', size=10)
 
+
+    max_value = max(data)
+    step = max_value /8
+    yticks = np.arange( 0 , max_value+ step, step)
+    ytick_labels = [str(int(y)) for y in yticks]
+
     # kot za prikaz vrednosti (10,20,30,40,...)
     ax.set_rlabel_position(16)
-    plt.yticks([10, 20, 30, 40, 50, 60, 70, 80], ["10", "20", "30", "40", "50", "60", "70", "80"], color='grey', size=7)
+
+    #plt.yticks([10, 20, 30, 40, 50, 60, 70, 80], ["10", "20", "30", "40", "50", "60", "70", "80"], color='grey', size=7)
+    plt.yticks(yticks, ytick_labels, color='grey', size=7)
+
     # range of values
-    plt.ylim(0, 80)
+    #plt.ylim(0, 80)
+    plt.ylim(0, max_value+step)
 
     for i in range(number_labels):
         ax.plot(angles_for_labels[i], data[i], 'o', color='blue')
