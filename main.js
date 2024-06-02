@@ -60,11 +60,16 @@ ipcMain.on('process-pdf', (event, filePath) => {
 
 });
 
-ipcMain.on('categorize-pdf', (event, filePath) => {
-    const pythonProcess = spawn('python', [join(__dirname, './python/pdfKategorizacija.py'), filePath]);
+ipcMain.on('pdf-model-type-and-patient-name', (event, filePath) => {
+    const pythonProcess = spawn('python',
+        [join(__dirname, './python/ImeModelaIzPDF in ImePacientaIzPDF/KategorijaPdfInImePacientaMAIN.py'), filePath]);
 
     pythonProcess.stdout.on('data', (data) => {
-        event.reply('pdf-categorized', data.toString().trim());
+
+        const result = JSON.parse(data.toString().trim());
+        //console.log("kategorija in ime pacienta: "+ result.category + " " + result.pacient_name);
+
+        event.reply('pdf-categorized-and-patient-name', result); //data.toString().trim()
     });
     pythonProcess.stderr.on('data', (data)=> {
         console.error(`stderror: ${data}`);
@@ -77,13 +82,12 @@ ipcMain.on('categorize-pdf', (event, filePath) => {
 ipcMain.on("send-table-to-butterfly-model", (event, dataToButterflyModel) => {
 
     const pythonProcess = spawn('python', [join(__dirname, './python/butterflyModel.py'),
-        JSON.stringify(dataToButterflyModel.results), dataToButterflyModel.filePathToSave] );
+        JSON.stringify(dataToButterflyModel.results), dataToButterflyModel.patient_name, dataToButterflyModel.filePathToSave] );
 
     pythonProcess.stdout.on('data', (data) => {
         //console.log("prediction: "+ data, "type of data: ", typeof data);
         event.reply('butterfly-model-response', data.toString()); // mozebi i stringify kje treba
     });
-
 
     pythonProcess.stderr.on('data', (data) => {
        console.error('stderr: ', data.toString());
@@ -96,7 +100,8 @@ ipcMain.on("send-table-to-butterfly-model", (event, dataToButterflyModel) => {
 ipcMain.on("send-table-to-head-neck-model", (event, dataToHeadNeckRelocationModel) => {
 
     const pythonProcess = spawn('python', [join(__dirname, './python/headneckModel.py'),
-        JSON.stringify(dataToHeadNeckRelocationModel.results), dataToHeadNeckRelocationModel.filePathToSave] );
+        JSON.stringify(dataToHeadNeckRelocationModel.results),dataToHeadNeckRelocationModel.patient_name,
+        dataToHeadNeckRelocationModel.filePathToSave] );
 
     console.log("head-neck tabele: ", JSON.stringify(dataToHeadNeckRelocationModel.result));
 

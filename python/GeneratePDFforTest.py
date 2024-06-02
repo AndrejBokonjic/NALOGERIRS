@@ -4,8 +4,7 @@ import matplotlib.pyplot as plt
 from math import pi
 from matplotlib.backends.backend_pdf import PdfPages
 
-import base64
-from io import BytesIO
+
 
 
 def create_pdf_for_the_test(table_data, prediction, pacient_name, filePathToSave):
