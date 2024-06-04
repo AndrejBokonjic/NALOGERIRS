@@ -14,10 +14,14 @@ import {extractButterflyTestDataPdfTwo} from "./ExtractButterflyTestDataPdfTwo.t
 import {extractHeadNeckTestData} from "./ExtractHeadNeckTestData.tsx";
 
 
+interface CustomFile extends File{
+    path: string,
+}
+
 
 export const FileProcessing = () => {
     const [files, setFiles] = useState<File[]>([]);
-    const [pdfTexts, setPdfTexts] = useState<Array[]>([]);
+    const [pdfTexts, setPdfTexts] = useState<Array<Array<Array<Array<string>>>>>([]);
 
     const [pdfCategories, setPdfCategories] = useState<string[]>([]);
     const [patientName, setPatientName] = useState<string[]>([]);
@@ -55,7 +59,7 @@ export const FileProcessing = () => {
         setFiles((prevFiles) => [...prevFiles, ...filesUpload]);
 
         filesUpload.forEach((file) => {
-            const filePath = file.path;
+            const filePath = (file as CustomFile).path;
             window.electron.ipcRenderer.send("process-pdf", filePath);
             window.electron.ipcRenderer.send("pdf-model-type-and-patient-name", filePath);
         });

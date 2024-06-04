@@ -2,7 +2,7 @@
 
 import { FileInput, Label } from "flowbite-react";
 import React, {useState} from "react";
-import {PDFViewer} from "./PDFViewer.tsx";
+import {PDFViewer} from "./PDFViewer.txt";
 import {PdfTextOnly} from "./PdfTextOnly.tsx";
 
 export function FileUpload() {

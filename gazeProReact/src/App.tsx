@@ -5,11 +5,7 @@ import './App.css'
 import {Pozdrav} from "./components/InUseComponents/Pozdrav.tsx";
 
 import {FileProcessing} from "./components/InUseComponents/FileProcessing.tsx";
-import {TableTemplate} from "./components/TestOrNotInUseComponents/TableTemplate.tsx";
-import {AddingRow} from "./components/addingNewRowTEST.tsx";
-import {TestAddTableFileProcessing} from "./components/TestOrNotInUseComponents/TestAddTableFileProcessing.tsx";
-import {PopUpFileProcessing} from "./components/TestOrNotInUseComponents/PopUpFileProcessing.tsx";
-import {FileProcessing2} from "./components/TestOrNotInUseComponents/FileProcessing2.tsx";
+
 import React, {useEffect, useState} from "react";
 import * as path from "path";
 
