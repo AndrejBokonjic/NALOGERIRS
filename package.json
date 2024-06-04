@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "NODE_ENV=development electron .",
-    "package": "NODE_ENV=production electron-builder"
+    "package": "NODE_ENV=production electron-builder --mac",
+    "package:windows": "NODE_ENV=production electron-builder --windows"
   },
   "keywords": [],
   "author": "",
