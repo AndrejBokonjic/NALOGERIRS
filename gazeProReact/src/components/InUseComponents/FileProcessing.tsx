@@ -1,6 +1,6 @@
 import { FilesUpload } from "./FilesUpload.tsx";
 import React, { useEffect, useState } from "react";
-import { Table } from "flowbite-react";
+import { Table, TableHead } from "flowbite-react";
 import "flowbite/dist/flowbite.css";
 import { FaSave, FaTimes } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
@@ -10,6 +10,7 @@ import "reactjs-popup/dist/index.css";
 import {LoadingAnimation} from "./LoadingAnimation.tsx";
 
 import {extractButterflyTestData} from "./ExtractButterflyTestData.tsx";
+import {extractButterflyTestDataPdfTwo} from "./ExtractButterflyTestDataPdfTwo.tsx";
 import {extractHeadNeckTestData} from "./ExtractHeadNeckTestData.tsx";
 
 
@@ -273,7 +274,28 @@ export const FileProcessing = () => {
 
         switch (pdfCategories[pdfIndex]) {
             case 'Butterfly test':
-                ({result, errors} = extractButterflyTestData(tabele));
+                console.log(tabele);
+        
+                // Function to check if 'Mean' is present in any cell
+                const containsMean = (tabele) => {
+                    for (const table of tabele) {
+                        for (const row of table) {
+                            if (row.includes('Mean')) {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                };
+        
+                // Check if 'Mean' is present and call the appropriate function
+                if (containsMean(tabele)) {
+                    console.log('Mean found in table data.');
+                    ({ result, errors } = extractButterflyTestData(tabele));
+                } else {
+                    console.log('Mean not found in table data.');
+                    ({ result, errors } = extractButterflyTestDataPdfTwo(tabele));
+                }
                 console.log('POSLJI V BUTTEFLY TEST', result);
                 console.log("NAPAKE: ", errors);
 
