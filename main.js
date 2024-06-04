@@ -1,10 +1,11 @@
 const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const {format} = require("url");
 
-const electronReload = require("electron-reload");
+//const electronReload = require("electron-reload");
 const { spawn } = require('child_process');
 const {join} = require("path");
 const path = require("path");
+const url = require("url");
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -17,9 +18,21 @@ function createWindow() {
         },
     });
 
-    win.loadURL('http://localhost:5173');
+    // win.loadURL('http://localhost:5173');
+    if (process.env.NODE_ENV === 'development') {
+        win.loadURL('http://localhost:5173');
+    } else {
+        console.log("tuka sme")
+        win.loadURL(url.format({
 
-    electronReload(__dirname, {});
+            pathname: join(__dirname, '/gazeProReact/dist/index.html'),
+            protocol: 'file:',
+            slashes: true
+        }));
+    }
+
+    //NIMAMO VEC HOT RELOAD, KER JE DELALO TEZAVE PRI BUILD
+    // electronReload(__dirname, {});
 }
 
 app.whenReady().then(createWindow);
@@ -35,6 +48,10 @@ app.on('activate', () => {
         createWindow();
     }
 });
+
+
+//const pythonExecutable = join(__dirname,'./python_embedded/python_embedded/python'); //, 'python'
+
 ipcMain.on('process-pdf', (event, filePath) => {
 
     const pythonProcess = spawn('python', [join(__dirname, './python/pdfReadPlumber.py'), filePath]);
