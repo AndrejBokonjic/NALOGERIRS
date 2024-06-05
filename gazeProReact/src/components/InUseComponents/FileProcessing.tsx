@@ -81,17 +81,6 @@ export const FileProcessing = () => {
             setPatientName(prevPatientName => [...prevPatientName, patient_name]);
         });
 
-        /*
-        // pridobimo rezultate (napoved) butterfly modela
-        window.electron.ipcRenderer.on('butterfly-model-response', (event, data) => {
-            // shranimo rezultat napoveda
-            setPdfData(data);
-
-        })
-        window.electron.ipcRenderer.on('head-neck-model-response', (event, data) => {
-            // shranimo rezultat napoveda
-        })*/
-
 
         return () => {
             window.electron.ipcRenderer.removeAllListeners("pdf-processed");

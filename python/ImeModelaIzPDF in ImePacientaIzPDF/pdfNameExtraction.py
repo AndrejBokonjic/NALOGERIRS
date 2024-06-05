@@ -35,14 +35,24 @@ def extract_near_keywords_from_pdf(file_path):
         for page in pdf.pages:
             text = page.extract_text()
             if text:
-                patient_text = extract_text_near_keyword(text, "Patient")
-                if patient_text:
-                    cleaned_patient_text = clean_name(patient_text)
+                # PRVI TIP PDF
+                patient_text_near_keyword = extract_text_near_keyword(text, "Patient")
+                if patient_text_near_keyword:
+                    cleaned_patient_text = clean_name(patient_text_near_keyword)
                     extracted_texts.append({"Keyword": "Patient", "Text": cleaned_patient_text})
-                client_text = extract_text_below_keyword(text, "Client")
-                if client_text:
-                    extracted_texts.append({"Keyword": "Client", "Text": client_text})
-    return extracted_texts
+                    return extracted_texts
+
+                # DRUGI TIP PDF
+                client_text_bellow_keyword = extract_text_below_keyword(text, "Client")
+                patient_text_below_keyword = extract_text_below_keyword(text, "Patient")
+
+                if client_text_bellow_keyword or patient_text_below_keyword:
+                    if client_text_bellow_keyword:
+                        extracted_texts.append({"Keyword": "Client", "Text": client_text_bellow_keyword})
+                    else:
+                        extracted_texts.append({"Keyword": "Patient", "Text": patient_text_below_keyword})
+                    return extracted_texts
+
 
 def get_patient_name (pdf_path):
     try:
@@ -51,8 +61,8 @@ def get_patient_name (pdf_path):
             for text_info in extracted_texts:
                 return text_info['Text']
                 #print(f"{text_info['Keyword']}: {text_info['Text']}")
-        else:
-            print("No relevant text found.")
+#         else:
+#             print("No relevant text found.")
     except Exception as e:
         print(f"Error: {str(e)}")
 

@@ -84,6 +84,8 @@ ipcMain.on('pdf-model-type-and-patient-name', (event, filePath) => {
     pythonProcess.stdout.on('data', (data) => {
 
         const result = JSON.parse(data.toString().trim());
+        console.log("RESULT IME I KATEGORIJA: "+ result);
+
         //console.log("kategorija in ime pacienta: "+ result.category + " " + result.pacient_name);
 
         event.reply('pdf-categorized-and-patient-name', result); //data.toString().trim()
@@ -94,6 +96,11 @@ ipcMain.on('pdf-model-type-and-patient-name', (event, filePath) => {
     pythonProcess.on('close', (code) => {
         console.log(`child process exited with code ${code}`);
     });
+    pythonProcess.on('error', (error) => {
+        console.error('Error starting Python process:', error);
+        event.reply('error', 'Error processing the PDF');
+    });
+
 });
 
 ipcMain.on("send-table-to-butterfly-model", (event, dataToButterflyModel) => {
