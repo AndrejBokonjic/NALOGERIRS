@@ -5,13 +5,11 @@ import numpy as np
 import re
 import sys
 
-
 def clean_cell(cell):
     """Remove the values inside parentheses from a cell"""
     if cell is None:
         return cell
     return re.sub(r'\(.*?\)', '', cell).strip()
-
 
 def remove_signs(cell):
     """Remove % and mm strings from the cell"""
@@ -22,15 +20,32 @@ def remove_signs(cell):
     cell = re.sub(r'\bmm\b', '', cell)
     return cell.strip()
 
+def separate_planes_in_cell(table_data):
+    """Separate 'Plane', 'Transverse Plane', and 'Frontal Plane' values into adjacent empty cells"""
+    for i in range(len(table_data)):
+        for j in range(len(table_data[i])):
+            cell = table_data[i][j]
+            if isinstance(cell, str):
+                if "Plane" in cell:
+                    planes = cell.split("Plane")
+                    # Remove empty strings from the split result
+                    planes = [plane.strip() for plane in planes if plane.strip()]
+                    # Insert the planes into adjacent cells
+                    table_data[i][j] = planes[0]
+                    for k in range(1, len(planes)):
+                        # Insert each plane into the next empty cell
+                        if j + k < len(table_data[i]) and not table_data[i][j + k]:
+                            table_data[i][j + k] = planes[k]
 
 def extract_text_from_pdf(file_path, include_null_tables=False):
     tables = []
     text_data = []
-    excluded_headers = ["SmoothnessofMovements", "Movement plots", "Movement Plots"]
+    excluded_headers = ["SmoothnessofMovements", "Movement plots", "Movement Plots", "Repetition Results"]
     graphical_results_variations = [
         "Graphical Results", "GRAPHICAL RESULTS", "Graphical results", "graphical results",
-        "GraphicalResults", "GRAPHICALRESULTS", "Graphicalresults", "graphicalresults", "Graphic Results"
+        "GraphicalResults", "GRAPHICALRESULTS", "Graphicalresults", "graphicalresults", "Graphic Results", "GRAPHIC RESULTS","Graphic results","graphic results"
     ]
+    strings_to_delete = ["Lateral Flexion Left", "Average Position in Degrees"]
 
     # Extract text from the entire PDF to check for "Butterfly-method"
     full_text = ""
@@ -60,6 +75,9 @@ def extract_text_from_pdf(file_path, include_null_tables=False):
                     columns = [clean_cell(col) for col in columns]
                     df.columns = columns
                     df = df.applymap(lambda cell: clean_cell(cell) if isinstance(cell, str) else cell)
+
+                    # Remove rows containing specific strings
+                    df = df[~df.apply(lambda row: row.astype(str).str.contains('|'.join(strings_to_delete)).any(), axis=1)]
 
                     # Check if the table has a header matching any of the variations
                     if any(header in columns for header in graphical_results_variations):
@@ -112,7 +130,6 @@ def extract_text_from_pdf(file_path, include_null_tables=False):
                                 table_data[i][j] = ""
 
                     # Move data after "%" sign to the next cell
-                    # !!!!!!!!!!!!!!!!!!!!!!!
                     for i in range(len(table_data)):
                         for j in range(len(table_data[i])):
                             if "%" in str(table_data[i][j]):
@@ -151,7 +168,9 @@ def extract_text_from_pdf(file_path, include_null_tables=False):
                         final_table = final_table[:-2]
 
                     if final_table:
+                        separate_planes_in_cell(final_table)
                         tables.append(final_table)
+
     else:
         with pdfplumber.open(file_path) as pdf:
             for page in pdf.pages:
@@ -167,7 +186,11 @@ def extract_text_from_pdf(file_path, include_null_tables=False):
 
                     # Clean the column headers and table cells
                     columns = [clean_cell(col) for col in columns]
+                    df.columns = columns
                     df = df.applymap(lambda cell: clean_cell(cell) if isinstance(cell, str) else cell)
+
+                    # Remove rows containing specific strings
+                    df = df[~df.apply(lambda row: row.astype(str).str.contains('|'.join(strings_to_delete)).any(), axis=1)]
 
                     # Check if the table has a header matching any of the variations
                     if any(header in columns for header in graphical_results_variations):
@@ -212,6 +235,7 @@ def extract_text_from_pdf(file_path, include_null_tables=False):
 
                     if 2 * value_in_cell > empty_or_none_cell:
                         final_table = [row for row in table_data if not all(cell == "" or cell is None for cell in row)]
+                        separate_planes_in_cell(final_table)  # Separate planes in the table
                         tables.append(final_table)
 
     return tables, text_data
@@ -221,8 +245,6 @@ if __name__ == "__main__":
     include_null_tables = True  # Set to True to include tables with more null values
     try:
         tables, text_data = extract_text_from_pdf(file_path, include_null_tables)
-        #for text in text_data:
-            #sys.stderr.write(text + "\n")
         print(json.dumps(tables))
     except Exception as e:
         print(json.dumps({"error": str(e)}))
