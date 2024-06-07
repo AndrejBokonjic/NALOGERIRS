@@ -70,6 +70,9 @@ export const FileProcessing = () => {
     useEffect(() => {
         //pridobimo tabele iz pdf
         window.electron.ipcRenderer.on("pdf-processed", (event, data) => {
+
+            console.log(data);
+
             setPdfTexts((prevTexts) => [...prevTexts, data]);
         });
         // pridobimo imena pdf

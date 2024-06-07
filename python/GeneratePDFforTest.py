@@ -114,8 +114,26 @@ def create_graph(table_data):
     plt.yticks(yticks, ytick_labels, color='grey', size=7)
     plt.ylim(min_value - step, max_value + step)
 
-    for i in range(number_labels):
-        ax.plot(angles_for_labels[i], data[i], 'o', color='blue')
+#     for i in range(number_labels):
+#         ax.plot(angles_for_labels[i], data[i], 'o', color='blue')
+    ax.plot(angles_for_labels[:-1], data[:-1], 'o', color='blue', label='Patient Data Points')
+
+    # --- PRIKAZ MEDIAN ---
+    if labels == ['ToT_e_m', 'ToT_m_m', 'ToT_d_m', 'Und_e_m', 'Und_m_m', 'Und_d_m', 'Over_e_m', 'Over_m_m', 'Over_d_m', 'AA_e_m', 'AA_m_m', 'AA_d_m']:
+        median_data = [62.76, 28.97, 13.87, 26.895, 50.475, 65.64, 8.74, 19.71, 20.455, 2.02, 3.64, 5.38]
+    elif labels == labels == ['HNRT_Aerr_l', 'HNRT_Cerr_l', 'HNRT_Verr_l', 'HNRT_Aerr_r', 'HNRT_Cerr_r', 'HNRT_Verr_r', 'HNRT_Aerr_f', 'HNRT_Cerr_f', 'HNRT_Verr_f', 'HNRT_Aerr_b', 'HNRT_Cerr_b', 'HNRT_Verr_b']:
+        median_data = [2.81, -0.435, 1.985, 3.165, -1.265, 1.865, 2.655, 1.105, 1.865, 3.69, -1.995, 2.345]
+
+    median_data += median_data[:1]
+    ax.plot(angles_for_labels, median_data, linewidth=2, linestyle='dashed') # label='Median data'
+    # for i in range(number_labels):
+    #   ax.plot(angles_for_labels[i], median_data[i], 'o', color='red', label='')
+
+    ax.plot(angles_for_labels[:-1], median_data[:-1], 'o', color='red', label='Median Data Points')
+
+    # - - - - - - - - - -
+
+    ax.legend(loc='lower right', bbox_to_anchor=(1.10, -0.16))
 
     buf = BytesIO()
     plt.savefig(buf, format='png', dpi=450)
@@ -173,7 +191,7 @@ def create_pdf_for_the_test(table_data, prediction, pacient_name, filePathToSave
         text = text_based_on_cluster_prediction_butterfly_model(prediction)
     elif labels == ['HNRT_Aerr_l', 'HNRT_Cerr_l', 'HNRT_Verr_l', 'HNRT_Aerr_r', 'HNRT_Cerr_r', 'HNRT_Verr_r',
                     'HNRT_Aerr_f', 'HNRT_Cerr_f', 'HNRT_Verr_f', 'HNRT_Aerr_b', 'HNRT_Cerr_b', 'HNRT_Verr_b']:
-        text = f"VSTAVI TEKST GLEDE NAPOVED {prediction}"
+        text = text_based_on_cluster_prediction_headNeckRelocation_model(prediction) #f"VSTAVI TEKST GLEDE NAPOVED {prediction}"
 
     margin = 70
     max_width = width - 2 * margin
@@ -217,9 +235,16 @@ def split_text_in_multiple_lines(text, max_width, canvas):
 def text_based_on_cluster_prediction_butterfly_model(prediction):
     switcher = {
         # cluster 1
-        0: "Level 3 - Larger movement deficits; Stays less time and further away from the target, with high undershoot, most prominent feature is high overshoot; presents with mild to moderate pain levels",
-        1: "Level 4 - Largest movement deficits; stays least time and furthest away from the target, with highest undershoot (all difficulty levels, with significantly affected performance already at easy level) and overshoot; presents with moderate to severe pain levels",
-        2: "Level 2 - Smaller movement deficits; stays considerable amount of time and close to the target, has high undershoot at medium and difficult level and smallest overshoot at all difficulty levels; presents with mild to moderate pain levels",
-        3: "Level 1 - Smallest movement deficits; stays most time and closest to the target, with lowest overshoot and low undershoot; presents with mild to moderate pain levels",
+        0: "Level 3 - Larger movement deficits; Stays less time and further away from the target, with high undershoot, most prominent feature is high overshoot; presents with mild to moderate pain levels.",
+        1: "Level 4 - Largest movement deficits; stays least time and furthest away from the target, with highest undershoot (all difficulty levels, with significantly affected performance already at easy level) and overshoot; presents with moderate to severe pain levels.",
+        2: "Level 2 - Smaller movement deficits; stays considerable amount of time and close to the target, has high undershoot at medium and difficult level and smallest overshoot at all difficulty levels; presents with mild to moderate pain levels.",
+        3: "Level 1 - Smallest movement deficits; stays most time and closest to the target, with lowest overshoot and low undershoot; presents with mild to moderate pain levels.",
+    }
+    return switcher.get(prediction, "error")
+
+def text_based_on_cluster_prediction_headNeckRelocation_model (prediction):
+    switcher = {
+        0: "More severe impairment.",
+        1: "Less severe impairment.",
     }
     return switcher.get(prediction, "error")
