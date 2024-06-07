@@ -475,7 +475,7 @@ export const FileProcessing = () => {
                                             onClick={() => handleRemoveTable(pdfIndex, tableIndex)}
                                             className="text-red-600 hover:text-white border
                                             border-red-500 hover:bg-red-900 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
-                                            Zbrisi tabelo
+                                            Remove table
                                         </button>
                                     </div>
                                 )}
