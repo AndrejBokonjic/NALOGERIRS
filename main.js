@@ -63,6 +63,9 @@ ipcMain.on('process-pdf', (event, filePath) => {
     pythonProcess.stdout.on('end', () => {
         try {
             const tables = JSON.parse(dataBuffer);
+
+            console.log(tables);
+
             event.reply('pdf-processed', tables);
         } catch (error) {
             console.error('Error parsing JSON data:', error);
