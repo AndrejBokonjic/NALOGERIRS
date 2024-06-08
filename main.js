@@ -31,8 +31,8 @@ function createWindow() {
         }));
     }
 
-    //NIMAMO VEC HOT RELOAD, KER JE DELALO TEZAVE PRI BUILD
-    // electronReload(__dirname, {});
+    
+     //electronReload(__dirname, {});
 }
 
 app.whenReady().then(createWindow);
@@ -120,6 +120,27 @@ ipcMain.on("send-table-to-butterfly-model", (event, dataToButterflyModel) => {
         console.log('child process exited with code ', code);
     });
 });
+
+ipcMain.on("send-table-to-range-of-motion", (event, dataToRangeOfMotion) => {
+
+    const pythonProcess = spawn('python', [join(__dirname, './python/rangemotionModel.py'),
+        JSON.stringify(dataToRangeOfMotion.results),dataToRangeOfMotion.patient_name,
+        dataToRangeOfMotion.filePathToSave] );
+
+    console.log("range-of-motion tabele: ", JSON.stringify(dataToRangeOfMotion.result));
+
+    pythonProcess.stdout.on('data', (data) => {
+        console.log("prediction: "+ data.toString());
+        event.reply('range-of-motion-model-response', data.toString());
+    });
+    pythonProcess.stderr.on('data', (data) => {
+       console.error('stderr: ', data.toString());
+    });
+    pythonProcess.on('close', (code) => {
+        console.log('child process exited with code ', code);
+    });
+});
+
 
 ipcMain.on("send-table-to-head-neck-model", (event, dataToHeadNeckRelocationModel) => {
 

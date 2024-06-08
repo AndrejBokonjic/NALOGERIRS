@@ -5,6 +5,16 @@ import numpy as np
 import re
 import sys
 
+
+def remove_word_plane(table_data):
+    """Remove only the word 'Plane' from each cell, leaving other text unchanged"""
+    for i in range(len(table_data)):
+        for j in range(len(table_data[i])):
+            if isinstance(table_data[i][j], str):
+                table_data[i][j] = re.sub(r'\bPlane\b', '', table_data[i][j]).strip()
+    return table_data
+
+
 def clean_cell(cell):
     """Remove the values inside parentheses from a cell"""
     if cell is None:
@@ -36,16 +46,50 @@ def separate_planes_in_cell(table_data):
                         # Insert each plane into the next empty cell
                         if j + k < len(table_data[i]) and not table_data[i][j + k]:
                             table_data[i][j + k] = planes[k]
+                elif "plane" in cell:
+                    planes = cell.split("plane")
+                    # Remove empty strings from the split result
+                    planes = [plane.strip() for plane in planes if plane.strip()]
+                    # Insert the planes into adjacent cells
+                    table_data[i][j] = planes[0]
+                    for k in range(1, len(planes)):
+                        # Insert each plane into the next empty cell
+                        if j + k < len(table_data[i]) and not table_data[i][j + k]:
+                            table_data[i][j + k] = planes[k]
+
+def insert_test_direction_row(table_data):
+    """Insert the 'Test Direction' row after a cell containing 'CV' is found"""
+    for i in range(len(table_data)):
+        for j in range(len(table_data[i])):
+            if "CV" in str(table_data[i][j]):
+                new_row = ["Test Direction", "", "", "Sagittal Plane", "Transverse Plane", "Frontal Plane"]
+                table_data.insert(i + 1, new_row)
+                return
+
+def remove_cv_columns(table_data):
+    """Remove columns containing 'CV'"""
+    columns_to_delete = set()
+    for i in range(len(table_data)):
+        for j in range(len(table_data[i])):
+            if "CV" in str(table_data[i][j]):
+                columns_to_delete.add(j)
+
+    for row in table_data:
+        for col_index in sorted(columns_to_delete, reverse=True):
+            if col_index < len(row):
+                del row[col_index]
+
+    return table_data
 
 def extract_text_from_pdf(file_path, include_null_tables=False):
     tables = []
     text_data = []
-    excluded_headers = ["SmoothnessofMovements", "Movement plots", "Movement Plots", "Repetition Results"]
+    excluded_headers = ["SmoothnessofMovements", "Movement plots", "Movement Plots", "Repetition Results", "Primary movements", "PRIMARY MOVEMENTS", "Primary Movements"]
     graphical_results_variations = [
         "Graphical Results", "GRAPHICAL RESULTS", "Graphical results", "graphical results",
         "GraphicalResults", "GRAPHICALRESULTS", "Graphicalresults", "graphicalresults", "Graphic Results", "GRAPHIC RESULTS","Graphic results","graphic results"
     ]
-    strings_to_delete = ["Lateral Flexion Left", "Average Position in Degrees"]
+    strings_to_delete = ["Average angle in degrees","Lateral Flexion Left", "Average Position in Degrees", "TestDirection", "Left lateral bending", "LateralBendingLeft", "TurningRight","LateralBendingRight"]
 
     # Extract text from the entire PDF to check for "Butterfly-method"
     full_text = ""
@@ -163,12 +207,15 @@ def extract_text_from_pdf(file_path, include_null_tables=False):
                         else:
                             final_table = []
 
-                    # Delete the last three rows if there are more than three rows
+                    # Delete the last two rows if there are more than three rows
                     if len(final_table) > 3:
                         final_table = final_table[:-2]
 
                     if final_table:
                         separate_planes_in_cell(final_table)
+                        insert_test_direction_row(final_table)
+                        final_table = remove_cv_columns(final_table)
+                        final_table = remove_word_plane(final_table)
                         tables.append(final_table)
 
     else:
@@ -236,6 +283,9 @@ def extract_text_from_pdf(file_path, include_null_tables=False):
                     if 2 * value_in_cell > empty_or_none_cell:
                         final_table = [row for row in table_data if not all(cell == "" or cell is None for cell in row)]
                         separate_planes_in_cell(final_table)  # Separate planes in the table
+                        insert_test_direction_row(final_table)  # Insert the 'Test Direction' row if 'CV' is found
+                        final_table = remove_cv_columns(final_table)  # Remove rows and cells containing 'CV'
+                        final_table = remove_word_plane(final_table)                    
                         tables.append(final_table)
 
     return tables, text_data

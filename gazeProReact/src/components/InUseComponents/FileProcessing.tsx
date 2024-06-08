@@ -13,6 +13,7 @@ import {extractButterflyTestData} from "./ExtractButterflyTestData.tsx";
 import {extractButterflyTestDataPdfTwo} from "./ExtractButterflyTestDataPdfTwo.tsx";
 import {extractHeadNeckTestData} from "./ExtractHeadNeckTestData.tsx";
 
+import { extractRangeOfMotionTestData } from "./ExtractRangeOfMotionTestData.tsx";
 
 interface CustomFile extends File{
     path: string,
@@ -87,6 +88,7 @@ export const FileProcessing = () => {
             window.electron.ipcRenderer.removeAllListeners("pdf-categorized-and-patient-name");
             window.electron.ipcRenderer.removeAllListeners('butterfly-model-response');
             window.electron.ipcRenderer.removeAllListeners('head-neck-model-response');
+            window.electron.ipcRenderer.removeAllListeners('range-of-motion-model-response')
         };
     }, []);
 
@@ -183,6 +185,14 @@ export const FileProcessing = () => {
             ["Forward Bending", "", "", ""],
             ["BackwardBending","", "", ""],
         ];
+        const newRangeOfMotion = [
+            ["GRAPHIC RESULTS", "", "", ""],
+            ["Numeric Results", "", "", ""],
+            ["Movement","Sagittal", "Transverse", "Frontal"],
+            ["Flexion" ,"", "", ""],
+            ["Extension", "", "", ""],
+            ["Left Rotation","", "", ""],
+        ];
         switch (pdfCategories[pdfIndex]){
             case "Butterfly test":
                 setPdfTexts((prevPdfTexts) => {
@@ -198,6 +208,12 @@ export const FileProcessing = () => {
                     return updatedPdfTexts;
                 });
                 break;
+            case "Range of motion":
+                setPdfTexts((prevPdfTexts) => {
+                    const updatedPdfTexts = [...prevPdfTexts];
+                    updatedPdfTexts[pdfIndex] = [...updatedPdfTexts[pdfIndex], newRangeOfMotion];
+                    return updatedPdfTexts;
+                });
         }
     };
 
@@ -341,7 +357,30 @@ export const FileProcessing = () => {
                 break;
 
             case 'Range of motion':
-                console.log("posji range of motion");
+                console.log('Tabele za range of motion test: ', tabele );
+                ({result, errors} = extractRangeOfMotionTestData(tabele));
+                setPdfErrors(prevPdfErrors => {
+                    const updatedPdfErrors =
+                        prevPdfErrors.filter(errorObject => errorObject.pdfIndex !== pdfIndex);
+                    if (errors.length >0){
+                        updatedPdfErrors.push({pdfIndex, errors});
+                    }
+                    return updatedPdfErrors;
+                });
+                if (errors.length === 0){
+
+                    const filePathToSave = await handleSavePDF(pdfIndex)
+                    const dataToRangeOfMotion = {
+                        "results": result,
+                        "patient_name": patientName[pdfIndex],
+                        "filePathToSave": filePathToSave
+                    }
+
+                    console.log('filePathToSave head neck : ', filePathToSave)
+
+                    console.log('POSLJI V RangeOFMotion TEST', result);
+                    window.electron.ipcRenderer.send('send-table-to-range-of-motion', dataToRangeOfMotion);
+                }
                 break;
         }
     };
