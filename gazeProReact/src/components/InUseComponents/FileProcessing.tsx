@@ -279,16 +279,21 @@ export const FileProcessing = () => {
         }
         return null;
     };
+    const sendToPythonScript = (data) => {
+
+        console.log('Sending data to Python script:', data);
+
+
+        window.electron.ipcRenderer.send('save-data-to-excel', data);
+    };
     const handleDobiSporocilo = async (pdfIndex) => {
         const tabele = pdfTexts[pdfIndex];
-
-        let result, errors:string[];
+        let result, errors;
 
         switch (pdfCategories[pdfIndex]) {
             case 'Butterfly test':
                 console.log(tabele);
-        
-                // Function to check if 'Mean' is present in any cell
+
                 const containsMean = (tabele) => {
                     for (const table of tabele) {
                         for (const row of table) {
@@ -299,8 +304,7 @@ export const FileProcessing = () => {
                     }
                     return false;
                 };
-        
-                // Check if 'Mean' is present and call the appropriate function
+
                 if (containsMean(tabele)) {
                     console.log('Mean found in table data.');
                     ({ result, errors } = extractButterflyTestData(tabele));
@@ -308,84 +312,93 @@ export const FileProcessing = () => {
                     console.log('Mean not found in table data.');
                     ({ result, errors } = extractButterflyTestDataPdfTwo(tabele));
                 }
-                console.log('POSLJI V BUTTEFLY TEST', result);
-                console.log("NAPAKE: ", errors);
 
                 setPdfErrors(prevPdfErrors => {
-                    const updatedPdfErrors =
-                        prevPdfErrors.filter(errorObject => errorObject.pdfIndex !== pdfIndex);
-                    if (errors.length >0){
-                        updatedPdfErrors.push({pdfIndex, errors});
+                    const updatedPdfErrors = prevPdfErrors.filter(errorObject => errorObject.pdfIndex !== pdfIndex);
+                    if (errors.length > 0) {
+                        updatedPdfErrors.push({ pdfIndex, errors });
                     }
                     return updatedPdfErrors;
                 });
 
-                if (errors.length ===0 ){
-                    const filePathToSave = await handleSavePDF(pdfIndex)
-                    const dataToButterflyModel ={
+                if (errors.length === 0) {
+                    const filePathToSave = await handleSavePDF(pdfIndex);
+                    const dataToButterflyModel = {
                         "results": result,
                         "patient_name": patientName[pdfIndex],
                         "filePathToSave": filePathToSave
-                    }
+                    };
+                    sendToPythonScript(dataToButterflyModel);
                     window.electron.ipcRenderer.send('send-table-to-butterfly-model', dataToButterflyModel);
                 }
                 break;
 
             case 'Head neck relocation test':
+                console.log('Tabele za head neck test: ', tabele);
+                ({ result, errors } = extractHeadNeckTestData(tabele));
+                console.log('Ekstrahovani rezultati za head neck test: ', result);
+                console.log('Greške za head neck test: ', errors);
 
-                console.log('Tabele za heand neck test: ', tabele );
-                ({result, errors} = extractHeadNeckTestData(tabele));
+                // Dodajemo proveru da li su podaci ispravno izdvojeni
+                if (result && Object.keys(result).length > 0) {
+                    console.log('Podaci su uspešno izdvojeni za head neck test.');
+                } else {
+                    console.error('Greška prilikom izdvajanja podataka za head neck test.');
+                }
+
                 setPdfErrors(prevPdfErrors => {
-                    const updatedPdfErrors =
-                        prevPdfErrors.filter(errorObject => errorObject.pdfIndex !== pdfIndex);
-                    if (errors.length >0){
-                        updatedPdfErrors.push({pdfIndex, errors});
+                    const updatedPdfErrors = prevPdfErrors.filter(errorObject => errorObject.pdfIndex !== pdfIndex);
+                    if (errors.length > 0) {
+                        updatedPdfErrors.push({ pdfIndex, errors });
                     }
                     return updatedPdfErrors;
                 });
-                if (errors.length === 0){
 
-                    const filePathToSave = await handleSavePDF(pdfIndex)
+                if (errors.length === 0) {
+                    const filePathToSave = await handleSavePDF(pdfIndex);
                     const dataToHeadNeckRelocationModel = {
                         "results": result,
                         "patient_name": patientName[pdfIndex],
                         "filePathToSave": filePathToSave
-                    }
-
-                    console.log('filePathToSave head neck : ', filePathToSave)
-
+                    };
+                    console.log('filePathToSave head neck : ', filePathToSave);
                     console.log('POSLJI V HEAD-NECK TEST', result);
+                    sendToPythonScript(dataToHeadNeckRelocationModel);
                     window.electron.ipcRenderer.send('send-table-to-head-neck-model', dataToHeadNeckRelocationModel);
                 }
                 break;
 
+
             case 'Range of motion':
-                console.log('Tabele za range of motion test: ', tabele );
-                ({result, errors} = extractRangeOfMotionTestData(tabele));
+                console.log('Tabele za range of motion test: ', tabele);
+                ({ result, errors } = extractRangeOfMotionTestData(tabele));
+
                 setPdfErrors(prevPdfErrors => {
-                    const updatedPdfErrors =
-                        prevPdfErrors.filter(errorObject => errorObject.pdfIndex !== pdfIndex);
-                    if (errors.length >0){
-                        updatedPdfErrors.push({pdfIndex, errors});
+                    const updatedPdfErrors = prevPdfErrors.filter(errorObject => errorObject.pdfIndex !== pdfIndex);
+                    if (errors.length > 0) {
+                        updatedPdfErrors.push({ pdfIndex, errors });
                     }
                     return updatedPdfErrors;
                 });
-                if (errors.length === 0){
 
-                    const filePathToSave = await handleSavePDF(pdfIndex)
+                if (errors.length === 0) {
+                    const filePathToSave = await handleSavePDF(pdfIndex);
                     const dataToRangeOfMotion = {
                         "results": result,
                         "patient_name": patientName[pdfIndex],
                         "filePathToSave": filePathToSave
-                    }
-
-                    console.log('filePathToSave head neck : ', filePathToSave)
-
+                    };
+                    console.log('filePathToSave range of motion: ', filePathToSave);
                     console.log('POSLJI V RangeOFMotion TEST', result);
+                    sendToPythonScript(dataToRangeOfMotion);
                     window.electron.ipcRenderer.send('send-table-to-range-of-motion', dataToRangeOfMotion);
                 }
                 break;
         }
+    };
+
+    const handleCreateExcel = () => {
+        window.electron.ipcRenderer.send('create-excel');
     };
 
     return (
@@ -480,7 +493,7 @@ export const FileProcessing = () => {
                                                             }
                                                             className="text-base"
                                                         >
-                                                            <FaTimes className="text-red-600 " />
+                                                            <FaTimes className="text-red-600 "/>
                                                         </button>
                                                     </>
                                                 ) : (
@@ -491,7 +504,7 @@ export const FileProcessing = () => {
                                                             }
                                                             className="bg-red-700 text-sm"
                                                         >
-                                                            <MdDelete className="text-white h-4 w-4" />
+                                                            <MdDelete className="text-white h-4 w-4"/>
                                                         </button>
                                                     </div>
                                                 )}
@@ -507,7 +520,7 @@ export const FileProcessing = () => {
                                     <div
                                         className="absolute  rounded  p-2"
                                         // *  bg-white border*/}
-                                        style={{ top: contextMenuVisible.y, left: contextMenuVisible.x }}
+                                        style={{top: contextMenuVisible.y, left: contextMenuVisible.x}}
                                         onClick={closeContextMenu}
                                     >
                                         <button
@@ -519,48 +532,68 @@ export const FileProcessing = () => {
                                     </div>
                                 )}
 
-                            {tableIndex < pdf.length-1 && <br />}
+                            {tableIndex < pdf.length - 1 && <br/>}
 
                         </div>
                     ))}
                     <br/>
 
                     <div className="flex justify-between mb-2">
-                    <button
-                        onClick={() => handleCreateTableClick(pdfIndex)}
-                        type="button"
-                        className="text-gray-400  hover:text-white border border-gray-500 hover:bg-gray-900
-                        font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-500
-                         dark:hover:text-white dark:hover:bg-gray-600 "
-                    >
-                        Manual input
-                    </button>
+                        <button
+                            onClick={() => handleCreateTableClick(pdfIndex)}
+                            type="button"
+                            className="text-gray-400  hover:text-white border border-gray-500 hover:bg-gray-900
+        font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-500
+        dark:hover:text-white dark:hover:bg-gray-600 "
+                        >
+                            Manual input
+                        </button>
 
-                    <button type="button" onClick={() => handleDobiSporocilo(pdfIndex)}
+                        <button
+                            type="button"
+                            onClick={() => handleDobiSporocilo(pdfIndex)}
                             className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none
-                             focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex
-                              items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                        Forward to analysis & save results
-                        <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true"
-                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
-                                  strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-                        </svg>
-                    </button>
+        focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex
+        items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                        >
+                            Forward to analysis & save results
+                            <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true"
+                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
+                                      strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+                            </svg>
+                        </button>
+
+                        <button
+                            onClick={handleCreateExcel}
+                            type="button"
+                            className="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none
+    focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex
+    items-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                        >
+                            Create Excel
+                            <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true"
+                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
+                                      strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+                            </svg>
+                        </button>
                     </div>
+
 
                     {pdfErrors
                         .filter(errorObject => errorObject.pdfIndex === pdfIndex)
                         .map((errorObject, errorIndex) => (
-                        <div key={errorIndex}>
-                            <h2 className="font-bold text-red-500 text-lg mb-2">Please fix the following errors before trying again: </h2>
-                            {errorObject.errors.map((error, errorIndex) => (
+                            <div key={errorIndex}>
+                                <h2 className="font-bold text-red-500 text-lg mb-2">Please fix the following errors
+                                    before trying again: </h2>
+                                {errorObject.errors.map((error, errorIndex) => (
                                     <p key={errorIndex}>{error}</p>
                                 ))}
-                            <br/>
-                        </div>
+                                <br/>
+                            </div>
 
-                    ))}
+                        ))}
 
 
                 </div>

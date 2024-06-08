@@ -179,4 +179,39 @@ ipcMain.handle('open-folder', async (event, filePath) => {
     shell.openPath(folderPath);
 })
 
+ipcMain.on('create-excel', (event) => {
+    const pythonProcess = spawn('python', [path.join(__dirname, 'python/Eksel/generateExcel.py')]);
+
+    pythonProcess.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+        console.error(`stderr: ${data}`);
+    });
+
+    pythonProcess.on('close', (code) => {
+        console.log(`child process exited with code ${code}`);
+    });
+});
+
+// Handler for saving data to an Excel file
+ipcMain.on('save-data-to-excel', (event, data) => {
+    const pythonProcess = spawn('python', [path.join(__dirname, 'python/Eksel/saveExcelData.py'), JSON.stringify(data)]);
+
+    pythonProcess.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
+        event.reply('save-data-to-excel-response', data.toString());
+    });
+
+    pythonProcess.stderr.on('data', (data) => {
+        console.error(`stderr: ${data}`);
+        event.reply('save-data-to-excel-response', `stderr: ${data.toString()}`);
+    });
+
+    pythonProcess.on('close', (code) => {
+        console.log(`child process exited with code ${code}`);
+    });
+});
+
 
