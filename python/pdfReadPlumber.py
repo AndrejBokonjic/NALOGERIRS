@@ -89,7 +89,7 @@ def extract_text_from_pdf(file_path, include_null_tables=False):
         "Graphical Results", "GRAPHICAL RESULTS", "Graphical results", "graphical results",
         "GraphicalResults", "GRAPHICALRESULTS", "Graphicalresults", "graphicalresults", "Graphic Results", "GRAPHIC RESULTS","Graphic results","graphic results"
     ]
-    strings_to_delete = ["Average angle in degrees","Lateral Flexion Left", "Average Position in Degrees", "TestDirection", "Left lateral bending", "LateralBendingLeft", "TurningRight","LateralBendingRight"]
+    strings_to_delete = ["Average angle in degrees","Lateral Flexion Left", "Average Position in Degrees", "TestDirection", "Left lateral bending", "LateralBendingLeft" ,"LateralBendingRight"] #"TurningRight"
 
     # Extract text from the entire PDF to check for "Butterfly-method"
     full_text = ""
