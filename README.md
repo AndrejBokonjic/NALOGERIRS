@@ -180,5 +180,5 @@ H ----> J
 ## Avtorji
 1. Boban Boshevski
 2. Andrej Bokonjić
-3. Stefan Vujic
+3. Stefan Vujičić
 
