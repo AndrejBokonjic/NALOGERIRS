@@ -1,4 +1,4 @@
-# GazePro Measurement
+# GazePro Measurement :health_worker:
 
 V kliničnih okoljih sta čas in natančnost ključnega pomena. Kliniki se 
 pogosto soočajo z ogromnimi količinami podatkov v PDF dokumentih, kot so
@@ -34,22 +34,22 @@ rezultatov pacientov.
 ## Vrednost za Uporabnike
 #### Za Klinike:
 
-* ** Časovna Učinkovitost: ** GazePro znatno zmanjša čas, porabljen za ročno izvlečenje podatkov iz PDF-jev. Kliniki se lahko bolj osredotočijo na oskrbo pacientov in manj na administrativne naloge.
-* Natančnost: Avtomatizirano določanje kategorij pacientov zagotavlja visoko natančnost, kar zmanjšuje tveganje za človeške napake pri interpretaciji medicinskih podatkov.
-* Nemotena Integracija: Aplikacija se gladko integrira z obstoječimi delovnimi procesi, kar omogoča enostavno nalaganje PDF-jev in prejemanje strukturiranih podatkovnih izhodov.
-* Izboljšano Odločanje: Hiter dostop do organiziranih in analiziranih informacij podpira bolj informirane in pravočasne klinične odločitve.
-* Varnost Pacientov: Z zagotavljanjem natančnih in pravočasnih informacij GazePro prispeva k boljšim rezultatom in varnosti pacientov.
+* **Časovna Učinkovitost:** GazePro znatno zmanjša čas, porabljen za ročno izvlečenje podatkov iz PDF-jev. Kliniki se lahko bolj osredotočijo na oskrbo pacientov in manj na administrativne naloge.
+* **Natančnost:** Avtomatizirano določanje kategorij pacientov zagotavlja visoko natančnost, kar zmanjšuje tveganje za človeške napake pri interpretaciji medicinskih podatkov.
+* **Nemotena Integracija:** Aplikacija se gladko integrira z obstoječimi delovnimi procesi, kar omogoča enostavno nalaganje PDF-jev in prejemanje strukturiranih podatkovnih izhodov.
+* **Izboljšano Odločanje:** Hiter dostop do organiziranih in analiziranih informacij podpira bolj informirane in pravočasne klinične odločitve.
+* **Varnost Pacientov:** Z zagotavljanjem natančnih in pravočasnih informacij GazePro prispeva k boljšim rezultatom in varnosti pacientov.
 
 ## Ključne lasnost
-* Uporabniški Vmesnik: Ponuja preprost in intuitiven vmesnik za enostavno 
+* **Uporabniški Vmesnik:** Ponuja preprost in intuitiven vmesnik za enostavno 
 obdelavo dokumentov in pridobivanje podatkov.
-* Avtomatizirano Izvlečenje Podatkov: Uporablja napredne algoritme za 
+* **Avtomatizirano Izvlečenje Podatkov:** Uporablja napredne algoritme za 
 prepoznavanje in izvlečenje tabel, imen pacientov in drugih ključnih
 informacij iz PDF-jev.
-* AI-Podprto Določanje Kategorij: Integrira specializirane modele strojnega 
+* **AI-Podprto Določanje Kategorij:** Integrira specializirane modele strojnega 
 učenja za določanje kategorij pacientov, kar pomaga pri klinični oceni in
 odločanju.
-* Generiranje končno pdf sporočilo:  klinik prejme enoten PDF z podatke o pacienta,
+* **Generiranje končno pdf sporočilo:**  klinik prejme enoten PDF z podatke o pacienta,
 grafom podatkov (meritve) pacienta in napovedjo AI modela glede pacientove kategorije.
 
 # Tehnični opis in način uporabe
@@ -98,15 +98,15 @@ uporabniškega vmesnika in zagotavlja profesionalen videz aplikacije.
 Python je znan po svoji enostavnosti, berljivosti in bogatem ekosistemu knjižnic,
 kar omogoča hitro in učinkovito razvoj kompleksnih algoritmov. Nekatere ključne
 knjižnice vključujejo:
-  * pdfplumber - Knjižnica za ekstrakcijo podatkov iz PDF dokumentov. Omogoča natančno
+  * **pdfplumber** - Knjižnica za ekstrakcijo podatkov iz PDF dokumentov. Omogoča natančno
   in zanesljivo pridobivanje tabel, besedil in drugih informacij.     
-  * Orange.data - Omogoča delo s podatki v formatu, ki je primeren za
+  * **Orange.data** - Omogoča delo s podatki v formatu, ki je primeren za
   modele strojnega učenja v Orange ekosistemu, kar omogoča enostavno 
   integracijo z Orange modeli.
-  * pickle - Omogoča serijalizacijo in deserializacijo modelov strojnega 
+  * **pickle** - Omogoča serijalizacijo in deserializacijo modelov strojnega 
   učenja, kar omogoča shranjevanje in nalaganje modelov na disk.
-  * reportlab - knjižnica za ustvarjanje PDF dokumentov
-  * io.BytesIO - omogoča obravnavo binarnih podatkov v pomnilniku kot datoteko 
+  * **reportlab** - knjižnica za ustvarjanje PDF dokumentov
+  * **io.BytesIO** - omogoča obravnavo binarnih podatkov v pomnilniku kot datoteko 
   za začasno shranjevanje slike grafa pred vdelavo v PDF (brez da bi jih shranjevali)
   * ...
 
@@ -118,26 +118,63 @@ svoje osnovno delo – zagotavljanje kakovostne zdravstvene oskrbe.
 
 ### Kaj smo se naučili in kje so bile težave
 
+Med projektom smo se naučili združiti različne tehnologije za razvoj celovite aplikacije,
+ki vključuje Electron za namizno aplikacijo, Tailwind CSS za oblikovanje, Flowbite za vnaprej pripravljene
+komponente in IPC komunikacijo
+za interakcijo med različnimi deli aplikacije. Electron je omogočil razvoj večplatformske 
+aplikacije z uporabo znanja spletnih tehnologij. Tailwind CSS je bil ključnega pomena za hitro in učinkovito oblikovanje uporabniškega
+vmesnika, ki je hkrati vizualno privlačen in funkcionalen. IPC komunikacija nam je omogočila
+izmenjavo podatkov med različnimi deli aplikacije, kar je bilo bistveno za integracijo 
+različnih funkcionalnosti in zagotavljanje gladkega delovanja aplikacije. S pomočjo Python
+knjižnic smo ustvarili radar grafe in PDF poročila za vizualno predstavitev rezultatov
+testov ter ustvarjali Excel datoteke za shranjevanje rezultatov.
 
-### Predpogoji za uporabo:
-* Node.js inštaliran (v21.5.0 - različica na kateri je projekt narejen)
-* Python inštaliran (v3.11.4) in ustrezne knjižnice (sys, pdfplumer, pandas, json, numpy, ...)
-* npm (node package manager)
+Trenutno se soočamo s težavami pri gradnji aplikacije, kot so integracija različnih 
+knjižnic in zagotavljanje pravilnega delovanja brez konfliktov.
+
+
+### Okvirna predstava uporabe aplikacije
+
+```mermaid
+graph LR
+A[PDF upload] --> B{Type of pdf?}
+B -- Butterfly test --> C[extracting the necessery data] -- sending to analysis --> D[predicting patient category] --> I[extracting patient info] --> G[Generating final PDF] 
+I --> J[Saving in excel]
+%%C --> I{Create excel table?}
+%%E --> I
+%%H --> I
+B -- Head Neck Relocation test --> E[extracting the necessery data] -- sending to analysis --> D  
+B -- Range of motion test --> H[extracting the necessery data]
+H ----> J
+
+%%A --> C(Round Rect)
+%%B --> D{Rhombus}
+%%C --> D
+```
+
+> [!IMPORTANT]
+> ### Predpogoji za uporabo
+> * Node.js inštaliran (v21.5.0 - različica na kateri je projekt narejen)
+> * Python inštaliran (v3.11.4) in ustrezne knjižnice (sys, pdfplumer, pandas, json, numpy, ...)
+> * npm (node package manager)
 
 > [!NOTE]
-> SFGDEDFGDFG
-
-### Kako začeti:
-* npm install - potrebno naredit posebno za Electron in posebno za React da
-bi inštaliral potrebne package-e
-* V terminal zaženi React app (folder gazeProReact) - npm run dev
-* Zaženi tudi electron app (en folder nazaj od gazeProReact) - npm start
+> ### Kako začeti
+> * npm install - potrebno naredit posebno za Electron in posebno za React da bi inštaliral potrebne package-e
+>   ```bash
+>    npm install
+>    ```
+> * V terminal zaženi React app (folder gazeProReact) - npm run dev
+>   ```bash
+>   npm run dev
+>  ```
+> * Zaženi tudi electron app (en folder nazaj od gazeProReact) - npm start
+>   ```bash
+>   npm start
+>  ```
 
 
 ## SCREENSHOTS
-## KJE VIDIMO UPORABO IN KOLKO VELIKA
-## KAJ SMO SE NAUCILI (KAJ JE BILO PROBLEM)
-## plus nekoj graf (kako flowchart)
 
 
 ## Avtorji
