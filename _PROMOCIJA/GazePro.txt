@@ -1,0 +1,29 @@
+GazePro
+
+GazePro je inovativna aplikacija, ki avtomatizira izvlečenje podatkov iz PDF dokumentov in s pomočjo umetne inteligence določa kategorije pacientov, kar povečuje natančnost kliničnih ocen.
+
+Leto izdelave: 2024
+
+Boban Boshevski
+Andrej Bokonjić
+Stefan Vujičić
+
+
+Domača stran: https://url.si/
+Vir podatkov: https://url.si/
+
+
+Koda: https://github.com/bobanboshevski/gazeProPraktikum2
+
+Kategorizacija: namizna aplikacija
+
+Oznake: Electron, ReactJS, Tailwind, Flowbite, NodeJS, Python, AgilenRazvoj, GitHub, UporabaAI (Machine learning).
+
+
+V kliničnih okoljih sta čas in natančnost ključnega pomena. Kliniki se pogosto soočajo z ogromnimi količinami podatkov v PDF dokumentih, kot so pacientovi zapisi in diagnostična poročila. Izvlečenje in analiza pomembnih informacij iz teh PDF-jev je zamudno opravilo, ki odvrača pozornost od oskrbe pacientov in odločanja. Tradicionalne ročne metode so nagnjene k napakam in neučinkovitostim, kar lahko vodi do zamud pri diagnozi in zdravljenju.
+
+GazePro je aplikacija, zasnovana za poenostavitev dela klinikov z avtomatizacijo izvlečenja in analize podatkov iz PDF dokumentov. S pomočjo naprednih algoritmov strojnega učenja GazePro določa, v katero kategorijo spada pacient, kar povečuje natančnost kliničnih ocen in odločitvenih procesov.
+
+Kliniki naložijo PDF dokument, iz katerega se izvlečejo potrebni podatki, ti podatki pa se pošljejo modelu. Na koncu klinik prejme enoten PDF z grafom podatkov pacienta in napovedjo AI modela glede pacientove podatke.
+
+GazePro je prelomno orodje za klinike, ki ponuja robustno rešitev za izzive ročnega izvlečenja podatkov iz PDF-jev. Z avtomatizacijo tega procesa GazePro ne le prihrani dragocen čas, ampak tudi izboljša natančnost in kakovost kliničnega odločanja. Na koncu projekt stremi k izboljšanju učinkovitosti in učinkovitosti kliničnih delovnih procesov, kar vodi do boljše oskrbe in rezultatov pacientov.
