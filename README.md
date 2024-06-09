@@ -8,6 +8,8 @@ ki odvrača pozornost od oskrbe pacientov in odločanja. Tradicionalne
 ročne metode so nagnjene k napakam in neučinkovitostim, kar lahko vodi do
 zamud pri diagnozi in zdravljenju.
 
+![Picture 10.png](_PROMOCIJA%2FScreenshoti%2FPicture%2010.png)
+
 ## Vizija
 
 > #### GazePro je inovativna aplikacija, ki avtomatizira izvlečenje podatkov iz PDF dokumentov in s pomočjo umetne inteligence določa kategorije pacientov, kar povečuje natančnost kliničnih ocen.
@@ -172,10 +174,6 @@ H ----> J
 >   ```bash
 >   npm start
 >  ```
-
-
-## SCREENSHOTS
-
 
 ## Avtorji
 1. Boban Boshevski
