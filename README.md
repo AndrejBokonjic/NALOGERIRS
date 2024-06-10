@@ -175,8 +175,8 @@ H ----> J
 >   npm start
 >  ```
 
-## Avtorji
-1. Boban Boshevski
-2. Andrej Bokonjić
-3. Stefan Vujičić
+## Avtorji :technologist:
+1. **Boban Boshevski**
+2. **Andrej Bokonjić**
+3. **Stefan Vujičić**
 
