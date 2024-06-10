@@ -21,7 +21,15 @@ def create_excel_file(filename):
     wb.save(filename)
 
 if __name__ == "__main__":
-    desktop = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop') 
+
+    def get_desktop_path():
+        if os.name == 'nt':
+            return os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')
+        else:
+            return os.path.join(os.path.expanduser('~'), 'Desktop')
+
+    desktop = get_desktop_path()
     file_path = os.path.join(desktop, "DataBase.xlsx")
     create_excel_file(file_path)
+
     messagebox.showinfo("Info", f"Excel file created successfully at {file_path}")
