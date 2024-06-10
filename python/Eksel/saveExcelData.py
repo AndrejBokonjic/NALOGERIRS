@@ -53,7 +53,14 @@ if __name__ == "__main__":
         data = json.loads(sys.argv[1])
         print(f"Data received: {data}")
 
-        desktop = os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')
+        
+        def get_desktop_path():
+            if os.name == 'nt':
+                return os.path.join(os.path.join(os.environ['USERPROFILE']), 'Desktop')
+            else:
+                return os.path.join(os.path.expanduser('~'), 'Desktop')
+
+        desktop = get_desktop_path()
         filename = os.path.join(desktop, "DataBase.xlsx")
 
         print(f"Excel file path: {filename}")
