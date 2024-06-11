@@ -26,6 +26,7 @@ export const extractButterflyTestDataPdfTwo = (tabele) => {
         }
 
         const headers = table[0];
+        console.log("HEADERS: ", headers);
         const tableName = headers[0] || `Table ${tableIndex + 1}`;
         console.log(`Table ${tableIndex + 1} (${tableName}) headers:`, headers);
         if (!headers || headers.length === 0) {
@@ -34,11 +35,23 @@ export const extractButterflyTestDataPdfTwo = (tabele) => {
             return;
         }
 
-        // Check if the table header matches "Amplitude accuracy"
-        if (!headers.includes("Amplitude accuracy")) {
+        // //Check if the table header matches "Amplitude accuracy"
+        // if (!headers.includes("Amplitude accuracy","Amplitude Accuracy" ) ) {
+        //     console.log(`Table ${tableIndex + 1} (${tableName}) does not contain 'Amplitude accuracy' header.`);
+        //     return;
+        // }
+
+        if (!headers.some(header => header === "Amplitude accuracy" || header === "Amplitude Accuracy")) {
             console.log(`Table ${tableIndex + 1} (${tableName}) does not contain 'Amplitude accuracy' header.`);
             return;
         }
+
+        /*
+        if (!headers.includes("Amplitude Accuracy") ) {
+            console.log(`Table ${tableIndex + 1} (${tableName}) does not contain 'Amplitude Accuracy' header.`);
+            return;
+        }*/
+
 
         const secondRow = table[1];
         console.log("Second row:", secondRow);
@@ -105,9 +118,12 @@ export const extractButterflyTestDataPdfTwo = (tabele) => {
         }
 
         // Check if the table header matches "Directional accuracy"
-        if (!headers.includes("Directional accuracy")) {
+        if (!headers.some(header => header === "Directional accuracy" || header === "Directional Accuracy")) {
             return;
         }
+        // if (!headers.includes("Directional accuracy")) {
+        //     return;
+        // }
 
         // Finding indices for Easy, Medium, and Difficult
         const easyIndex = secondRow.indexOf('Easy');
@@ -166,7 +182,7 @@ export const extractButterflyTestDataPdfTwo = (tabele) => {
             for (let i = easyIndex + 1; i < secondRow.length; i++) {
                 if (thirdRow[i] === 'Overshoot') {
                     overshootIndices.push(i);
-                } else if (thirdRow[i] === 'On target') {
+                } else if (thirdRow[i] === 'On target' || thirdRow[i] === 'On Target') {
                     onTargetIndices.push(i);
                 }
                 if (overshootIndices.length === 3 && onTargetIndices.length === 3) break;

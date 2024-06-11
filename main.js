@@ -49,13 +49,15 @@ app.on('activate', () => {
     }
 });
 
+//const pythonExecutable = join(__dirname,'./python_embedded/python_embedded/python');
+
 const processPDF = (filePath) => {
     return new Promise((resolve, reject) => {
 
         // ZA BUILD
-        //const pythonProcess = spawn('python', [path.join(__dirname, '..', '/python/pdfReadPlumber.py'), filePath]);
+        const pythonProcess = spawn('python', [path.join(__dirname, '..', '/python/pdfReadPlumber.py'), filePath]);
 
-        const pythonProcess = spawn('python', [path.join(__dirname, '/python/pdfReadPlumber.py'), filePath]);
+        //const pythonProcess = spawn('python', [path.join(__dirname, '/python/pdfReadPlumber.py'), filePath]);
         let dataBuffer = '';
 
         pythonProcess.stdout.on('data', (data) => {
@@ -85,9 +87,9 @@ const processPDF = (filePath) => {
 const processModelTypeAndPatientName = (filePath) => {
     return new Promise((resolve, reject) => {
         //ZA BUILD
-        //const pythonProcess = spawn('python', [path.join(__dirname, '..', '/python/ImeModelaIzPDF in ImePacientaIzPDF/KategorijaPdfInImePacientaMAIN.py'), filePath]);
+        const pythonProcess = spawn('python', [path.join(__dirname, '..', '/python/ImeModelaIzPDF in ImePacientaIzPDF/KategorijaPdfInImePacientaMAIN.py'), filePath]);
 
-        const pythonProcess = spawn('python', [path.join(__dirname, '/python/ImeModelaIzPDF in ImePacientaIzPDF/KategorijaPdfInImePacientaMAIN.py'), filePath]);
+        //const pythonProcess = spawn('python', [path.join(__dirname, '/python/ImeModelaIzPDF in ImePacientaIzPDF/KategorijaPdfInImePacientaMAIN.py'), filePath]);
 
         pythonProcess.stdout.on('data', (data) => {
             const result = JSON.parse(data.toString().trim());
@@ -193,9 +195,11 @@ ipcMain.on('pdf-model-type-and-patient-name', (event, filePath) => {
  */
 
 ipcMain.on("send-table-to-butterfly-model", (event, dataToButterflyModel) => {
-
-    const pythonProcess = spawn('python', [join(__dirname, './python/butterflyModel.py'),
+    const pythonProcess = spawn('python', [join(__dirname,'..' ,'/python/butterflyModel.py'),
         JSON.stringify(dataToButterflyModel.results), dataToButterflyModel.patient_name, dataToButterflyModel.filePathToSave] );
+
+    //const pythonProcess = spawn('python', [join(__dirname, './python/butterflyModel.py'),
+    //    JSON.stringify(dataToButterflyModel.results), dataToButterflyModel.patient_name, dataToButterflyModel.filePathToSave] );
 
     pythonProcess.stdout.on('data', (data) => {
         //console.log("prediction: "+ data, "type of data: ", typeof data);
@@ -212,9 +216,12 @@ ipcMain.on("send-table-to-butterfly-model", (event, dataToButterflyModel) => {
 
 ipcMain.on("send-table-to-range-of-motion", (event, dataToRangeOfMotion) => {
 
-    const pythonProcess = spawn('python', [join(__dirname, './python/rangemotionModel.py'),
+    const pythonProcess = spawn('python', [join(__dirname, '..', '/python/rangemotionModel.py'),
         JSON.stringify(dataToRangeOfMotion.results),dataToRangeOfMotion.patient_name,
         dataToRangeOfMotion.filePathToSave] );
+    // const pythonProcess = spawn('python', [join(__dirname, './python/rangemotionModel.py'),
+    //     JSON.stringify(dataToRangeOfMotion.results),dataToRangeOfMotion.patient_name,
+    //     dataToRangeOfMotion.filePathToSave] );
 
     console.log("range-of-motion tabele: ", JSON.stringify(dataToRangeOfMotion.result));
 
@@ -233,9 +240,13 @@ ipcMain.on("send-table-to-range-of-motion", (event, dataToRangeOfMotion) => {
 
 ipcMain.on("send-table-to-head-neck-model", (event, dataToHeadNeckRelocationModel) => {
 
-    const pythonProcess = spawn('python', [join(__dirname, './python/headneckModel.py'),
+    const pythonProcess = spawn('python', [join(__dirname, '..','/python/headneckModel.py'),
         JSON.stringify(dataToHeadNeckRelocationModel.results),dataToHeadNeckRelocationModel.patient_name,
         dataToHeadNeckRelocationModel.filePathToSave] );
+
+    // const pythonProcess = spawn('python', [join(__dirname, './python/headneckModel.py'),
+    //     JSON.stringify(dataToHeadNeckRelocationModel.results),dataToHeadNeckRelocationModel.patient_name,
+    //     dataToHeadNeckRelocationModel.filePathToSave] );
 
     console.log("head-neck tabele: ", JSON.stringify(dataToHeadNeckRelocationModel.result));
 
@@ -266,7 +277,8 @@ ipcMain.handle('open-folder', async (event, filePath) => {
 })
 
 ipcMain.on('create-excel', (event) => {
-    const pythonProcess = spawn('python', [path.join(__dirname, 'python/Eksel/generateExcel.py')]);
+    const pythonProcess = spawn('python', [path.join(__dirname,'..' ,'python/Eksel/generateExcel.py')]);
+    //const pythonProcess = spawn('python', [path.join(__dirname, 'python/Eksel/generateExcel.py')]);
 
     pythonProcess.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`);
@@ -283,7 +295,7 @@ ipcMain.on('create-excel', (event) => {
 
 // Handler for saving data to an Excel file
 ipcMain.on('save-data-to-excel', (event, data) => {
-    const pythonProcess = spawn('python', [path.join(__dirname, 'python/Eksel/saveExcelData.py'), JSON.stringify(data)]);
+    const pythonProcess = spawn('python', [path.join(__dirname,'..', 'python/Eksel/saveExcelData.py'), JSON.stringify(data)]);
 
     pythonProcess.stdout.on('data', (data) => {
         console.log(`stdout: ${data}`);

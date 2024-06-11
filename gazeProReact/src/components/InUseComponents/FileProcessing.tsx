@@ -255,11 +255,9 @@ export const FileProcessing = () => {
         }
         return null;
     };
+
     const sendToPythonScript = (data) => {
-
         console.log('Sending data to Python script:', data);
-
-
         window.electron.ipcRenderer.send('save-data-to-excel', data);
     };
 

@@ -3,8 +3,10 @@ import json
 import pickle
 import Orange.data
 import pandas as pd
-
+import os
 from GeneratePDFforTest import create_pdf_for_the_test
+currentPath= os.getcwd()
+
 
 def load_model(model_path):
     with open(model_path, 'rb') as model_file:
@@ -32,7 +34,14 @@ def main():
     patient_name = sys.argv[2]
     filePathToSave = sys.argv[3]
 
-    model = load_model("python/MLmodels/ModelHeadNeckRelocationTest.pkcls")
+    # DEVELOPMENT
+    #model = load_model("python/MLmodels/ModelHeadNeckRelocationTest.pkcls")
+
+    # MAC BUILD - hardcoded
+    #model = load_model('/Users/bobanboshevski/FERI IPT/Drugi letnik/2 SEMESTAR/Praktikum/gazeProPraktikum2 FINAL/dist/mac-arm64/GazeProMeasurement.app/Contents/Resources/python/MLmodels/ModelHeadNeckRelocationTest.pkcls')
+
+    # WINDOWS BUILD
+    model = load_model(os.path.join(currentPath,r"resources\python\MLmodels\ModelHeadNeckRelocationTest.pkcls"))
 
     input_df = parse_input_data(input_data)
 
