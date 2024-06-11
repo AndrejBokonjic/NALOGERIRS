@@ -9,11 +9,10 @@ import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 import {LoadingAnimation} from "./LoadingAnimation.tsx";
 
-import {extractButterflyTestData} from "./ExtractButterflyTestData.tsx";
-import {extractButterflyTestDataPdfTwo} from "./ExtractButterflyTestDataPdfTwo.tsx";
-import {extractHeadNeckTestData} from "./ExtractHeadNeckTestData.tsx";
-
 import { extractRangeOfMotionTestData } from "./ExtractRangeOfMotionTestData.tsx";
+import { ManualInputButton} from "./Buttons/ManualInput.tsx";
+import { ForwardToAnalysisAndSaveResultsButton} from "./Buttons/ForwardToAnalysisAndSaveResults.tsx";
+import { CreateExcelButton} from "./Buttons/CreateExcel.tsx";
 
 interface CustomFile extends File{
     path: string,
@@ -59,36 +58,61 @@ export const FileProcessing = () => {
     const handleChangeOnFilesUpload = (filesUpload: File[]) => {
         setFiles((prevFiles) => [...prevFiles, ...filesUpload]);
 
+        const filePaths = filesUpload.map(file => (file as CustomFile).path);
+        window.electron.ipcRenderer.send("process-all-pdfs", filePaths);
+        window.electron.ipcRenderer.send("process-all-models", filePaths);
+
+        /*
         filesUpload.forEach((file) => {
             const filePath = (file as CustomFile).path;
             window.electron.ipcRenderer.send("process-pdf", filePath);
             window.electron.ipcRenderer.send("pdf-model-type-and-patient-name", filePath);
         });
+        */
     };
 
 
     //const [pdfData, setPdfData] = useState(null);
     useEffect(() => {
         //pridobimo tabele iz pdf
+        /*
         window.electron.ipcRenderer.on("pdf-processed", (event, data) => {
-
             console.log(data);
-
             setPdfTexts((prevTexts) => [...prevTexts, data]);
         });
+        */
+
         // pridobimo imena pdf
+        /*
         window.electron.ipcRenderer.on("pdf-categorized-and-patient-name", (event, data) => {
-
             const {category, patient_name} = data;
-
             setPdfCategories((prevCategories) => [...prevCategories, category]);
             setPatientName(prevPatientName => [...prevPatientName, patient_name]);
+        });
+        */
+        window.electron.ipcRenderer.on("pdfs-processed", (event, data) => {
+            console.log(data);
+            // PDFS DATA
+            setPdfTexts((prevTexts) => [...prevTexts, ...data]);
+        });
+
+        window.electron.ipcRenderer.on("pdfs-categorized-and-patient-name", (event, data) => {
+            console.log(data);
+            // CATEGORIZED AND PATIENT NAME DATA
+            const categories = data.map(item => item.category);
+            const patientNames = data.map(item => item.patientName);
+
+            setPdfCategories((prevCategories) => [...prevCategories, ...categories]);
+            setPatientName((prevPatientName) => [...prevPatientName, ...patientNames]);
         });
 
 
         return () => {
-            window.electron.ipcRenderer.removeAllListeners("pdf-processed");
-            window.electron.ipcRenderer.removeAllListeners("pdf-categorized-and-patient-name");
+            // window.electron.ipcRenderer.removeAllListeners("pdf-processed");
+            // window.electron.ipcRenderer.removeAllListeners("pdf-categorized-and-patient-name");
+            window.electron.ipcRenderer.removeAllListeners("pdfs-processed");
+            window.electron.ipcRenderer.removeAllListeners("pdfs-categorized-and-patient-name");
+
             window.electron.ipcRenderer.removeAllListeners('butterfly-model-response');
             window.electron.ipcRenderer.removeAllListeners('head-neck-model-response');
             window.electron.ipcRenderer.removeAllListeners('range-of-motion-model-response')
@@ -171,54 +195,6 @@ export const FileProcessing = () => {
         setRowToDelete(null);
     };
 
-    const handleCreateTableClick = (pdfIndex) => {
-        setShowInsertTable(true);
-        const newButterflyTestTable = [
-            ["DIRECTIONALACCURACY", "", "","", "AMPLITUDE ACCURACY"],
-            ["DifficultyLevel", "TimeonTarget", "Undershoots", "Overshoots", "Mean"],
-            ["Easy", "", "", "", ""],
-            ["Medium", "", "", "", ""],
-            ["Difficult", "", "", "", ""],
-        ];
-
-        const newHeadNeckRelocationTestTable = [
-            ["RELOCATION FROM", "ABSOLUTE ERROR°", "CONSTANT ERROR°", "VARIABLE ERROR°"],
-            ["Turning Left","", "", ""],
-            ["TurningRight" ,"", "", ""],
-            ["Forward Bending", "", "", ""],
-            ["BackwardBending","", "", ""],
-        ];
-        const newRangeOfMotion = [
-            ["GRAPHIC RESULTS", "", "", ""],
-            ["Numeric Results", "", "", ""],
-            ["Movement","Sagittal", "Transverse", "Frontal"],
-            ["Flexion" ,"", "", ""],
-            ["Extension", "", "", ""],
-            ["Left Rotation","", "", ""],
-        ];
-        switch (pdfCategories[pdfIndex]){
-            case "Butterfly test":
-                setPdfTexts((prevPdfTexts) => {
-                    const updatedPdfTexts = [...prevPdfTexts];
-                    updatedPdfTexts[pdfIndex] = [...updatedPdfTexts[pdfIndex], newButterflyTestTable];
-                    return updatedPdfTexts;
-                });
-                break;
-            case "Head neck relocation test":
-                setPdfTexts((prevPdfTexts) => {
-                    const updatedPdfTexts = [...prevPdfTexts];
-                    updatedPdfTexts[pdfIndex] = [...updatedPdfTexts[pdfIndex], newHeadNeckRelocationTestTable];
-                    return updatedPdfTexts;
-                });
-                break;
-            case "Range of motion":
-                setPdfTexts((prevPdfTexts) => {
-                    const updatedPdfTexts = [...prevPdfTexts];
-                    updatedPdfTexts[pdfIndex] = [...updatedPdfTexts[pdfIndex], newRangeOfMotion];
-                    return updatedPdfTexts;
-                });
-        }
-    };
 
 
     const handleRemoveTable = (pdfIndex, tableIndex) => {
@@ -286,119 +262,7 @@ export const FileProcessing = () => {
 
         window.electron.ipcRenderer.send('save-data-to-excel', data);
     };
-    const handleDobiSporocilo = async (pdfIndex) => {
-        const tabele = pdfTexts[pdfIndex];
-        let result, errors;
 
-        switch (pdfCategories[pdfIndex]) {
-            case 'Butterfly test':
-                console.log(tabele);
-
-                const containsMean = (tabele) => {
-                    for (const table of tabele) {
-                        for (const row of table) {
-                            if (row.includes('Mean')) {
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
-                };
-
-                if (containsMean(tabele)) {
-                    console.log('Mean found in table data.');
-                    ({ result, errors } = extractButterflyTestData(tabele));
-                } else {
-                    console.log('Mean not found in table data.');
-                    ({ result, errors } = extractButterflyTestDataPdfTwo(tabele));
-                }
-
-                setPdfErrors(prevPdfErrors => {
-                    const updatedPdfErrors = prevPdfErrors.filter(errorObject => errorObject.pdfIndex !== pdfIndex);
-                    if (errors.length > 0) {
-                        updatedPdfErrors.push({ pdfIndex, errors });
-                    }
-                    return updatedPdfErrors;
-                });
-
-                if (errors.length === 0) {
-                    const filePathToSave = await handleSavePDF(pdfIndex);
-                    const dataToButterflyModel = {
-                        "results": result,
-                        "patient_name": patientName[pdfIndex],
-                        "filePathToSave": filePathToSave
-                    };
-                    sendToPythonScript(dataToButterflyModel);
-                    window.electron.ipcRenderer.send('send-table-to-butterfly-model', dataToButterflyModel);
-                }
-                break;
-
-            case 'Head neck relocation test':
-                console.log('Tabele za head neck test: ', tabele);
-                ({ result, errors } = extractHeadNeckTestData(tabele));
-                console.log('Ekstrahovani rezultati za head neck test: ', result);
-                console.log('Greške za head neck test: ', errors);
-
-                // Dodajemo proveru da li su podaci ispravno izdvojeni
-                if (result && Object.keys(result).length > 0) {
-                    console.log('Podaci su uspešno izdvojeni za head neck test.');
-                } else {
-                    console.error('Greška prilikom izdvajanja podataka za head neck test.');
-                }
-
-                setPdfErrors(prevPdfErrors => {
-                    const updatedPdfErrors = prevPdfErrors.filter(errorObject => errorObject.pdfIndex !== pdfIndex);
-                    if (errors.length > 0) {
-                        updatedPdfErrors.push({ pdfIndex, errors });
-                    }
-                    return updatedPdfErrors;
-                });
-
-                if (errors.length === 0) {
-                    const filePathToSave = await handleSavePDF(pdfIndex);
-                    const dataToHeadNeckRelocationModel = {
-                        "results": result,
-                        "patient_name": patientName[pdfIndex],
-                        "filePathToSave": filePathToSave
-                    };
-                    console.log('filePathToSave head neck : ', filePathToSave);
-                    console.log('POSLJI V HEAD-NECK TEST', result);
-                    sendToPythonScript(dataToHeadNeckRelocationModel);
-                    window.electron.ipcRenderer.send('send-table-to-head-neck-model', dataToHeadNeckRelocationModel);
-                }
-                break;
-
-            case 'Range of motion':
-                console.log('Tabele za range of motion test: ', tabele);
-                ({ result, errors } = extractRangeOfMotionTestData(tabele));
-
-                setPdfErrors(prevPdfErrors => {
-                    const updatedPdfErrors = prevPdfErrors.filter(errorObject => errorObject.pdfIndex !== pdfIndex);
-                    if (errors.length > 0) {
-                        updatedPdfErrors.push({ pdfIndex, errors });
-                    }
-                    return updatedPdfErrors;
-                });
-
-                if (errors.length === 0) {
-                    const filePathToSave = await handleSavePDF(pdfIndex);
-                    const dataToRangeOfMotion = {
-                        "results": result,
-                        "patient_name": patientName[pdfIndex],
-                        "filePathToSave": filePathToSave
-                    };
-                    console.log('filePathToSave range of motion: ', filePathToSave);
-                    console.log('POSLJI V RangeOFMotion TEST', result);
-                    sendToPythonScript(dataToRangeOfMotion);
-                    window.electron.ipcRenderer.send('send-table-to-range-of-motion', dataToRangeOfMotion);
-                }
-                break;
-        }
-    };
-
-    const handleCreateExcel = () => {
-        window.electron.ipcRenderer.send('create-excel');
-    };
 
     return (
         <>
@@ -408,6 +272,7 @@ export const FileProcessing = () => {
                 <LoadingAnimation/>
             ): (
             <div>
+
             {pdfTexts.map((pdf, pdfIndex) => (
                 <div key={pdfIndex}>
                     <h3 className="font-bold">
@@ -538,48 +403,21 @@ export const FileProcessing = () => {
                     <br/>
 
                     <div className="flex justify-between mb-2">
-                        <button
-                            onClick={() => handleCreateTableClick(pdfIndex)}
-                            type="button"
-                            className="text-gray-400  hover:text-white border border-gray-500 hover:bg-gray-900
-        font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-500
-        dark:hover:text-white dark:hover:bg-gray-600 "
-                        >
-                            Manual input
-                        </button>
+                        <ManualInputButton setPdfTexts={setPdfTexts} pdfCategories={pdfCategories} pdfIndex={pdfIndex }/>
 
-                        <button
-                            type="button"
-                            onClick={() => handleDobiSporocilo(pdfIndex)}
-                            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none
-        focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex
-        items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                        >
-                            Forward to analysis & save results
-                            <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true"
-                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
-                                      strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-                            </svg>
-                        </button>
+                        <ForwardToAnalysisAndSaveResultsButton pdfIndex={pdfIndex}
+                                                         pdfCategories={pdfCategories}
+                                                         handleSavePDF={handleSavePDF}
+                                                         pdfTexts={pdfTexts}
+                                                         patientName={patientName}
+                                                         sendToPythonScript={sendToPythonScript}
+                                                         setPdfErrors={setPdfErrors} />
 
-                        <button
-                            onClick={handleCreateExcel}
-                            type="button"
-                            style = {{position:"absolute", top:"0", right:"16px", marginTop:"16px"}}
-                            className="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none
-    focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex
-    items-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-                        >
-                            Create Excel
-                            <svg className="rtl:rotate-180 w-3.5 h-3.5 ms-2" aria-hidden="true"
-                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-                                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"
-                                      strokeWidth="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-                            </svg>
-                        </button>
+                        <CreateExcelButton />
+
                     </div>
 
+                    <br/>
 
                     {pdfErrors
                         .filter(errorObject => errorObject.pdfIndex === pdfIndex)
@@ -595,12 +433,9 @@ export const FileProcessing = () => {
 
                         ))}
 
-
                 </div>
             ))}
-
             </div>
-
             )}
 
             <DeleteConfirmationModal

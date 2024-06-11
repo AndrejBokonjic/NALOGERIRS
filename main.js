@@ -49,11 +49,95 @@ app.on('activate', () => {
     }
 });
 
+const processPDF = (filePath) => {
+    return new Promise((resolve, reject) => {
 
-//const pythonExecutable = join(__dirname,'./python_embedded/python_embedded/python'); //, 'python'
+        // ZA BUILD
+        //const pythonProcess = spawn('python', [path.join(__dirname, '..', '/python/pdfReadPlumber.py'), filePath]);
 
+        const pythonProcess = spawn('python', [path.join(__dirname, '/python/pdfReadPlumber.py'), filePath]);
+        let dataBuffer = '';
+
+        pythonProcess.stdout.on('data', (data) => {
+            dataBuffer += data.toString();
+        });
+        pythonProcess.stdout.on('end', () => {
+            try {
+                const tables = JSON.parse(dataBuffer);
+                resolve(tables);
+            } catch (error) {
+                console.error('Error parsing JSON data:', error);
+                reject(error);
+            }
+        });
+        pythonProcess.stderr.on('data', (data) => {
+            console.log(`stderr: ${data}`);
+        });
+        pythonProcess.on('close', (code) => {
+            console.log(`child process exited with code ${code}`);
+        });
+        pythonProcess.on('error', (error) => {
+            console.log('Error starting Python process:', error);
+            reject('Error processing the PDF');
+        });
+    });
+};
+const processModelTypeAndPatientName = (filePath) => {
+    return new Promise((resolve, reject) => {
+        //ZA BUILD
+        //const pythonProcess = spawn('python', [path.join(__dirname, '..', '/python/ImeModelaIzPDF in ImePacientaIzPDF/KategorijaPdfInImePacientaMAIN.py'), filePath]);
+
+        const pythonProcess = spawn('python', [path.join(__dirname, '/python/ImeModelaIzPDF in ImePacientaIzPDF/KategorijaPdfInImePacientaMAIN.py'), filePath]);
+
+        pythonProcess.stdout.on('data', (data) => {
+            const result = JSON.parse(data.toString().trim());
+            resolve(result);
+        });
+        pythonProcess.stderr.on('data', (data) => {
+            console.error(`stderr: ${data}`);
+        });
+        pythonProcess.on('close', (code) => {
+            console.log(`child process exited with code ${code}`);
+        });
+        pythonProcess.on('error', (error) => {
+            console.error('Error starting Python process:', error);
+            reject('Error processing the PDF');
+        });
+    });
+};
+
+ipcMain.on('process-all-pdfs', async (event, filePaths) => {
+    try {
+        const results = [];
+        for (const filePath of filePaths) {
+            const pdfContentResult = await processPDF(filePath);
+            results.push(pdfContentResult);
+        }
+        event.reply('pdfs-processed', results);
+    } catch (error) {
+        console.error('Error processing all PDFs:', error);
+        event.reply('error', 'Error processing the PDFs');
+    }
+});
+ipcMain.on('process-all-models', async (event, filePaths) => {
+    try {
+        const results = [];
+        for (const filePath of filePaths) {
+            const modelAndNameResult = await processModelTypeAndPatientName(filePath);
+            results.push({
+                category: modelAndNameResult.category,
+                patientName: modelAndNameResult.patient_name,
+            });
+        }
+        event.reply('pdfs-categorized-and-patient-name', results);
+    } catch (error) {
+        console.error('Error processing all PDFs:', error);
+        event.reply('error', 'Error processing the PDFs');
+    }
+});
+
+/*
 ipcMain.on('process-pdf', (event, filePath) => {
-
     const pythonProcess = spawn('python', [join(__dirname, './python/pdfReadPlumber.py'), filePath]);
     let dataBuffer = '';
     pythonProcess.stdout.on('data', (data) => {
@@ -77,9 +161,11 @@ ipcMain.on('process-pdf', (event, filePath) => {
     pythonProcess.on('close', (code) => {
         console.log(`child process exited with code ${code}`);
     });
-
 });
 
+ */
+
+/*
 ipcMain.on('pdf-model-type-and-patient-name', (event, filePath) => {
     const pythonProcess = spawn('python',
         [join(__dirname, './python/ImeModelaIzPDF in ImePacientaIzPDF/KategorijaPdfInImePacientaMAIN.py'), filePath]);
@@ -103,8 +189,8 @@ ipcMain.on('pdf-model-type-and-patient-name', (event, filePath) => {
         console.error('Error starting Python process:', error);
         event.reply('error', 'Error processing the PDF');
     });
-
 });
+ */
 
 ipcMain.on("send-table-to-butterfly-model", (event, dataToButterflyModel) => {
 
