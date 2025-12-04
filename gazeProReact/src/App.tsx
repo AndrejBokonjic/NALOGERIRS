@@ -2,11 +2,11 @@
 //import reactLogo from './assets/react.svg'
 //import viteLogo from '/vite.svg'
 import './App.css'
-import {Pozdrav} from "./components/InUseComponents/Pozdrav.tsx";
+import { Pozdrav } from "./components/InUseComponents/Pozdrav.tsx";
 
-import {FileProcessing} from "./components/InUseComponents/FileProcessing.tsx";
+import { FileProcessing } from "./components/InUseComponents/FileProcessing.tsx";
 
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import * as path from "path";
 
 
@@ -17,14 +17,27 @@ function App() {
   return (
     <>
 
-        <Pozdrav/>
+      <Pozdrav />
 
-        <FileProcessing />
+      <FileProcessing />
 
+      {/* 1) Spremeni barvo ozadja */}
+      <div style={{ marginTop: "20px" }}>
+        <button
+          onClick={() => {
+            document.body.style.backgroundColor =
+              document.body.style.backgroundColor === "lightblue"
+                ? "white"
+                : "lightblue";
+          }}
+        >
+          Spremeni barvo ozadja
+        </button>
+      </div>
 
-        {/*<TableTemplate />*/}
+      {/*<TableTemplate />*/}
 
-        {/*<FileUpload/>*}/
+      {/*<FileUpload/>*}/
 
 
         {/*
