@@ -12,6 +12,8 @@ import * as path from "path";
 
 function App() {
   //const [count, setCount] = useState(0)
+  const [showText, setShowText] = useState(false);
+
 
 
   return (
@@ -33,6 +35,17 @@ function App() {
         >
           Spremeni barvo ozadja
         </button>
+      </div>
+
+      <div style={{ marginTop: "20px" }}>
+        <button onClick={() => setShowText(!showText)}>
+          {showText ? "Skrij obvestilo" : "Prikaži obvestilo"}
+        </button>
+        {showText && (
+          <p style={{ marginTop: "10px" }}>
+            To je testno dodatno besedilo za demonstracijo funkcionalnosti.
+          </p>
+        )}
       </div>
 
       {/*<TableTemplate />*/}
