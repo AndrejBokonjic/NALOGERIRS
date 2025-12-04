@@ -13,7 +13,7 @@ import * as path from "path";
 function App() {
   //const [count, setCount] = useState(0)
   const [showText, setShowText] = useState(false);
-
+  const [textSize, setTextSize] = useState(16);
 
 
   return (
@@ -46,6 +46,17 @@ function App() {
             To je testno dodatno besedilo za demonstracijo funkcionalnosti.
           </p>
         )}
+
+      </div>
+
+            <div style={{ marginTop: "20px" }}>
+        <p style={{ fontSize: textSize }}>
+          To besedilo lahko spreminja velikost.
+        </p>
+        <button onClick={() => setTextSize(textSize + 2)}>+</button>
+        <button onClick={() => setTextSize(textSize - 2)} style={{ marginLeft: "10px" }}>
+          -
+        </button>
       </div>
 
       {/*<TableTemplate />*/}
