@@ -4,7 +4,7 @@ import pickle
 import Orange.data
 import pandas as pd
 import os
-from GeneratePDFforTest import create_pdf_for_the_test
+from backend.GeneratePDFforTest import create_pdf_for_the_test
 currentPath= os.getcwd()
 
 

@@ -1,0 +1,8 @@
+pytest
+pytest-cov
+pdfplumber
+reportlab
+openpyxl
+numpy
+pandas
+Orange3
