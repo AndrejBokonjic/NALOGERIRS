@@ -4,7 +4,7 @@ import pickle
 import Orange.data
 import pandas as pd
 
-from GeneratePDFforTest import create_pdf_for_the_test
+from backend.GeneratePDFforTest import create_pdf_for_the_test
 
 def load_model(model_path):
     with open(model_path, 'rb') as model_file:
