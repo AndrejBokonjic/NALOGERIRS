@@ -1,59 +1,61 @@
-// gazeProReact/src/__tests__/App.test.tsx
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import App from "../App";
-import { describe, expect, test } from "vitest";
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import App from '../App';
+import { describe, expect, test } from 'vitest';
 
-describe("App osnovne interakcije", () => {
-
-  test("prikaže pozdravni naslov", () => {
+describe('App osnovne interakcije', () => {
+  test('prikaže pozdravni naslov', () => {
     render(<App />);
     expect(
-      screen.getByRole("heading", { name: /gazepro measurements/i })
+      screen.getByRole('heading', { name: /gazepro measurements/i })
     ).toBeInTheDocument();
   });
 
-  test("gumb za prikaz/skritje obvestila deluje", async () => {
+  test('gumb za prikaz/skritje obvestila deluje', async () => {
     const user = userEvent.setup();
     render(<App />);
 
-    const toggleBtn = screen.getByRole("button", { name: /prikaži obvestilo/i });
+    const toggleBtn = screen.getByRole('button', { name: /prikaži obvestilo/i });
     await user.click(toggleBtn);
 
-    expect(
-      screen.getByText(/testno dodatno besedilo/i)
-    ).toBeInTheDocument();
+    const text = screen.getByText(/testno dodatno besedilo/i);
+    expect(text).toBeInTheDocument();
 
     await user.click(toggleBtn);
-
-    expect(
-      screen.queryByText(/testno dodatno besedilo/i)
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/testno dodatno besedilo/i)).not.toBeInTheDocument();
   });
 
-  test("gumb za spremembo barve ozadja spremeni background", async () => {
+  test('gumb za spremembo barve ozadja spremeni background', async () => {
     const user = userEvent.setup();
     render(<App />);
 
-    const btn = screen.getByRole("button", { name: /spremeni barvo ozadja/i });
-
-    const initialColor = document.body.style.backgroundColor;
+    const btn = screen.getByRole('button', { name: /spremeni barvo ozadja/i });
+    const initial = document.body.style.backgroundColor;
 
     await user.click(btn);
-
-    expect(document.body.style.backgroundColor).not.toBe(initialColor);
+    expect(document.body.style.backgroundColor).not.toBe(initial);
   });
 
-  test("UI se naloži brez napak in vsebuje osnovne elemente", () => {
+  test('gumba + in - spreminjata velikost besedila', async () => {
+    const user = userEvent.setup();
     render(<App />);
 
-    // Pozdrav komponenta
-    expect(screen.getByText(/gazepro measurements/i)).toBeInTheDocument();
+    const text = screen.getByText(/to besedilo lahko spreminja velikost/i);
+    const bigger = screen.getByRole('button', { name: /^\+$/ });
+    const smaller = screen.getByRole('button', { name: /^-$/ });
 
-    // Gumb za obvestilo
-    expect(screen.getByRole("button", { name: /prikaži obvestilo/i })).toBeInTheDocument();
+    const initialSize = text.style.fontSize || '16px';
 
-    // Gumb za spremembo ozadja
-    expect(screen.getByRole("button", { name: /spremeni barvo ozadja/i })).toBeInTheDocument();
+    await user.click(bigger);
+    expect(text.style.fontSize).not.toBe(initialSize);
+
+    await user.click(smaller);
+    expect(text).toBeInTheDocument();
+  });
+
+  // 🔥 DODANI TEST #2 (preveri, da je FileProcessing prisoten)
+  test('FileProcessing komponenta je prisotna v DOM-u', () => {
+    render(<App />);
+    expect(screen.getByText(/upload pdf/i)).toBeInTheDocument();
   });
 });

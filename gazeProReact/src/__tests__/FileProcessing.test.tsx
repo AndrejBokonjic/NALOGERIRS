@@ -13,15 +13,8 @@ vi.mock("../components/InUseComponents/FileProcessing", () => ({
 }));
 
 import { FileProcessing } from "../components/InUseComponents/FileProcessing";
-import App from "../App";
 
 describe("FileProcessing UI", () => {
-
-  test('FileProcessing komponenta je prisotna v DOM-u', () => {
-    render(<App />);
-    // poiščemo label iz FileProcessing
-    expect(screen.getByText(/Upload pdf/i)).toBeInTheDocument();
-  });
 
   test("ima gumb Manual input", () => {
     render(<FileProcessing />);
