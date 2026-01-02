@@ -7,9 +7,7 @@ on:
     branches: [ main, pre-production, production ]
 
 jobs:
-  # -------------------------
-  # BACKEND TESTS
-  # -------------------------
+
   backend-tests:
     name: Python backend tests
     runs-on: ubuntu-latest
@@ -48,9 +46,6 @@ jobs:
             backend/backend-coverage.xml
             backend/backend-htmlcov/
 
-  # -------------------------
-  # FRONTEND TESTS
-  # -------------------------
   frontend-tests:
     name: React frontend tests
     runs-on: ubuntu-latest
@@ -85,9 +80,6 @@ jobs:
           name: frontend-coverage
           path: gazeProReact/coverage/
 
-  # -------------------------
-  # BACKEND BUILD
-  # -------------------------
   backend-build:
     name: Backend build
     runs-on: ubuntu-latest
@@ -107,9 +99,6 @@ jobs:
           name: backend-build
           path: backend-build/
 
-  # -------------------------
-  # FRONTEND BUILD
-  # -------------------------
   frontend-build:
     name: Frontend build
     runs-on: ubuntu-latest
@@ -138,9 +127,6 @@ jobs:
           name: frontend-dist
           path: gazeProReact/dist/
 
-  # -------------------------
-  # DOCKER BUILD & PUSH
-  # -------------------------
   docker-build-push:
     name: Docker build & push
     runs-on: ubuntu-latest
@@ -157,7 +143,11 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/nalogerirs:latest .
+          docker build \
+            -t ${{ secrets.DOCKER_USERNAME }}/nalogerirs:latest \
+            -f backend/Dockerfile \
+            backend
+
 
       - name: Push Docker image
         run: |
