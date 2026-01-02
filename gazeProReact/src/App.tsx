@@ -7,8 +7,6 @@ import { Pozdrav } from "./components/InUseComponents/Pozdrav.tsx";
 import { FileProcessing } from "./components/InUseComponents/FileProcessing.tsx";
 
 import React, { useEffect, useState } from "react";
-import * as path from "path";
-
 
 function App() {
   //const [count, setCount] = useState(0)
