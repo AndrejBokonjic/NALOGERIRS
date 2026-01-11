@@ -80,7 +80,7 @@ jobs:
           name: frontend-coverage
           path: gazeProReact/coverage/
 
-  sonarcloud:
+  sonarcloud-analysis:
     name: SonarCloud analysis
     runs-on: ubuntu-latest
     needs: [backend-tests, frontend-tests]
@@ -103,22 +103,25 @@ jobs:
           path: gazeProReact/coverage/
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
+        uses: sonarsource/sonarcloud-github-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-      - name: SonarCloud Quality Gate
-        uses: SonarSource/sonarcloud-quality-gate-action@v1
-        timeout-minutes: 5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  sonar-quality-gate:
+    name: SonarCloud Quality Gate
+    runs-on: ubuntu-latest
+    needs: sonarcloud-analysis
 
-
+    steps:
+      - name: Check Quality Gate
+        uses: sonarsource/sonarcloud-quality-gate-action@v1.1.0
+        with:
+          sonar-token: ${{ secrets.SONAR_TOKEN }}
 
   backend-build:
     name: Backend build
     runs-on: ubuntu-latest
-    needs: backend-tests
+    needs: sonar-quality-gate
 
     steps:
       - uses: actions/checkout@v4
@@ -137,7 +140,7 @@ jobs:
   frontend-build:
     name: Frontend build
     runs-on: ubuntu-latest
-    needs: frontend-tests
+    needs: sonar-quality-gate
 
     steps:
       - uses: actions/checkout@v4
@@ -182,7 +185,6 @@ jobs:
             -t ${{ secrets.DOCKER_USERNAME }}/nalogerirs:latest \
             -f backend/Dockerfile \
             backend
-
 
       - name: Push Docker image
         run: |
